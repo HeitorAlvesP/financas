@@ -1,4 +1,9 @@
 export async function createTableUsuario(db) {
+
+    const tabelaExiste = await db.get(`
+        SELECT name FROM sqlite_master WHERE type='table' AND name='tb_usuario'
+    `);
+
     await db.exec(`
         CREATE TABLE IF NOT EXISTS tb_usuario (
             id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -9,5 +14,8 @@ export async function createTableUsuario(db) {
             data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
-    console.log("- Tabela 'tb_usuario' verificada/criada.");
+
+    if (!tabelaExiste) {
+        console.log("- Tabela 'tb_usuario' criada com sucesso.");
+    }
 }
