@@ -11,7 +11,8 @@ export async function createTableUsuario(db) {
             email TEXT NOT NULL UNIQUE,
             senha TEXT NOT NULL,
             status INTEGER DEFAULT 1,               -- 1: Ativo (conforme solicitado)
-            email_confirmado INTEGER DEFAULT 0,     -- 0: Não, 1: Sim
+            email_confirmado INTEGER DEFAULT 0,     -- 1: ativo
+            codigo_validacao TEXT,
             ultimo_login DATETIME,                  -- Ficará nulo até o primeiro login
             grupo_usuario TEXT DEFAULT 'A',         -- Padrão 'A'
             data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP

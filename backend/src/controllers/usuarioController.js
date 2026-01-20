@@ -41,3 +41,4 @@ export const cadastrarUsuario = async (db, req, res) => {
         return res.status(500).json({ erro: "Erro interno ao cadastrar usuário." });
     }
 };
+/*       ###         */
