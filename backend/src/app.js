@@ -1,27 +1,29 @@
-import 'dotenv/config'; // DEVE ser a primeira linha
-import cors from 'cors';
+import 'dotenv/config'; 
 import express from 'express';
+import cors from 'cors';
 import { env } from 'process';
 import { iniciarBanco } from './database/config.js';
+import usuarioRoutes from './routes/usuarioRoutes.js';
 
 const app = express();
 const port = env.PORT || 3000; 
 
-app.use(cors());
+app.use(cors()); 
 app.use(express.json());
-
-/* ROTA TESTE */
-app.get('/api/status', (req, res) => {
-    res.json({
-        mensagem: "Backend está online e aceitando conexões!",
-        timestamp: new Date().toISOString()        
-    })
-})
-
 
 async function startServer() {
     try {
-        await iniciarBanco();
+        // Iniciamos o banco e guardamos a conexão
+        const db = await iniciarBanco();
+
+        // Configuramos as rotas de usuário passando o banco para elas
+        app.use('/api/usuarios', usuarioRoutes(db));
+
+        // Rota simples de teste de status
+        app.get('/api/status', (req, res) => {
+            res.json({ status: "Backend online e banco conectado!" });
+        });
+
         app.listen(port, () => {
             console.log(`Servidor rodando na porta ${port}`);
         });

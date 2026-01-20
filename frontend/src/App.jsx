@@ -1,36 +1,82 @@
-import { useState, useEffect } from 'react' // Importamos "Hooks" (ferramentas do React)
+import { useState } from 'react'
 
 function App() {
-  // Criamos uma "caixa" (estado) para guardar a mensagem que vem do banco
-  const [mensagem, setMensagem] = useState('Carregando...')
+  // Estados para as caixas de texto (Inputs)
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [aviso, setAviso] = useState('')
 
-  // O useEffect faz algo assim que a tela abre
-  useEffect(() => {
-    // Buscamos os dados daquela rota que criamos no Node
-    fetch('http://localhost:3000/api/status')
-      .then(response => response.json()) // Converte a resposta para JSON
-      .then(data => {
-        setMensagem(data.mensagem) // Guarda a mensagem do backend na nossa "caixa"
+  // Função disparada ao clicar no botão de cadastrar
+  const lidarComCadastro = async (e) => {
+    e.preventDefault() // Impede que a página recarregue ao enviar o formulário
+
+    try {
+      const resposta = await fetch('http://localhost:3000/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha })
       })
-      .catch(err => {
-        setMensagem('Erro ao conectar com o backend')
-        console.error(err)
-      })
-  }, []) // O array vazio [] diz para rodar isso apenas UMA VEZ ao abrir a página
+
+      const dados = await resposta.json()
+      
+      if (resposta.ok) {
+        setAviso(`Sucesso: ${dados.mensagem}`)
+        // Limpa os campos após o cadastro
+        setNome(''); setEmail(''); setSenha('')
+      } else {
+        setAviso(`Erro: ${dados.erro}`)
+      }
+    } catch (err) {
+      setAviso('Erro ao conectar com o servidor.')
+    }
+  }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Meu Sistema de Finanças</h1>
-      <p>Status do sistema:</p>
-      {/* Exibimos o que está dentro da nossa caixa "mensagem" */}
-      <div style={{ 
-        padding: '10px', 
-        backgroundColor: '#f0f0f0', 
-        borderRadius: '5px',
-        color: 'green' 
-      }}>
-        {mensagem}
-      </div>
+    <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
+      <h1>Cadastro de Usuário</h1>
+      <form onSubmit={lidarComCadastro}>
+        <div style={{ marginBottom: '15px' }}>
+          <label>Nome:</label>
+          <input 
+            type="text" 
+            value={nome} 
+            onChange={e => setNome(e.target.value)} 
+            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+          />
+        </div>
+        <div style={{ marginBottom: '15px' }}>
+          <label>E-mail:</label>
+          <input 
+            type="email" 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+          />
+        </div>
+        <div style={{ marginBottom: '15px' }}>
+          <label>Senha:</label>
+          <input 
+            type="password" 
+            value={senha} 
+            onChange={e => setSenha(e.target.value)} 
+            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+          />
+        </div>
+        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
+          Cadastrar
+        </button>
+      </form>
+
+      {aviso && (
+        <p style={{ 
+          marginTop: '20px', 
+          padding: '10px', 
+          backgroundColor: aviso.startsWith('Sucesso') ? '#2e7d32' : '#d32f2f' 
+        }}>
+          {aviso}
+        </p>
+      )}
     </div>
   )
 }
