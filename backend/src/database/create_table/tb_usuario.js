@@ -10,7 +10,10 @@ export async function createTableUsuario(db) {
             nome TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             senha TEXT NOT NULL,
-            status_confirmacao INTEGER DEFAULT 0, -- 0: pendente, 1: confirmado
+            status INTEGER DEFAULT 1,               -- 1: Ativo (conforme solicitado)
+            email_confirmado INTEGER DEFAULT 0,     -- 0: Não, 1: Sim
+            ultimo_login DATETIME,                  -- Ficará nulo até o primeiro login
+            grupo_usuario TEXT DEFAULT 'A',         -- Padrão 'A'
             data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);

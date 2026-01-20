@@ -1,10 +1,22 @@
-// Função para cadastrar o usuário
 export const cadastrarUsuario = async (db, req, res) => {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, confirmarSenha } = req.body;
 
-    // Validação simples de campos obrigatórios
-    if (!nome || !email || !senha) {
+    // 1. Validação de campos vazios
+    if (!nome || !email || !senha || !confirmarSenha) {
         return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
+    }
+
+    // 2. Verificar se as senhas são iguais
+    if (senha !== confirmarSenha) {
+        return res.status(400).json({ erro: "As senhas não coincidem." });
+    }
+
+    const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    if (!regexSenha.test(senha)) {
+        return res.status(400).json({ 
+            erro: "A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais." 
+        });
     }
 
     try {
@@ -18,7 +30,6 @@ export const cadastrarUsuario = async (db, req, res) => {
             id: resultado.lastID 
         });
     } catch (error) {
-        // Tratamento para e-mail duplicado
         if (error.message.includes("UNIQUE constraint failed")) {
             return res.status(400).json({ erro: "Este e-mail já está cadastrado." });
         }
