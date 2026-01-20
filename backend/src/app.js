@@ -1,13 +1,23 @@
 import 'dotenv/config'; // DEVE ser a primeira linha
+import cors from 'cors';
 import express from 'express';
 import { env } from 'process';
-import { iniciarBanco } from './database/config.js'; // Lembre-se da extensão .js em ESM
+import { iniciarBanco } from './database/config.js';
 
 const app = express();
-// Fallback para a porta 3000 caso o .env não seja lido
-const port = env.PORT; 
+const port = env.PORT || 3000; 
 
+app.use(cors());
 app.use(express.json());
+
+/* ROTA TESTE */
+app.get('/api/status', (req, res) => {
+    res.json({
+        mensagem: "Backend está online e aceitando conexões!",
+        timestamp: new Date().toISOString()        
+    })
+})
+
 
 async function startServer() {
     try {
