@@ -1,97 +1,28 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// Importamos as páginas que criamos na pasta /pages
+import Home from './pages/Home.jsx';
+import Register from './pages/Register.jsx';
 
 function App() {
-  // Estados para as caixas de texto (Inputs)
-  const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [aviso, setAviso] = useState('')
-  const [confirmarSenha, setConfirmarSenha] = useState('')
-
-  // Função disparada ao clicar no botão de cadastrar
-  const lidarComCadastro = async (e) => {
-    setAviso('');
-    e.preventDefault();
-
-    try {
-      const resposta = await fetch('http://localhost:3000/api/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha, confirmarSenha })
-      })
-
-      const dados = await resposta.json()
-
-      if (resposta.ok) {
-        setAviso(`Sucesso: ${dados.mensagem}`)
-        // Limpa os campos após o cadastro
-        setNome(''); setEmail(''); setSenha(''); setConfirmarSenha('');
-      } else {
-        setAviso(`Erro: ${dados.erro}`)
-      }
-    } catch (err) {
-      setAviso('Erro ao conectar com o servidor.')
-    }
-  }
-
   return (
-    <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
-      <h1>Cadastro de Usuário</h1>
-      <form onSubmit={lidarComCadastro}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Nome:</label>
-          <input
-            type="text"
-            value={nome}
-            onChange={e => setNome(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label>E-mail:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Senha:</label>
-          <input
-            type="password"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
+    // O Router envolve toda a nossa aplicação para permitir a navegação
+    <Router>
+      <Routes>
+        {/* Definimos o caminho (path) e qual componente deve aparecer (element) */}
+        
+        {/* Página Principal (Apresentação) */}
+        <Route path="/" element={<Home />} />
+        
+        {/* Página de Cadastro */}
+        <Route path="/register" element={<Register />} />
 
-        <div style={{ marginBottom: '15px' }}>
-          <label>Confirmar Senha:</label>
-          <input
-            type="password"
-            value={confirmarSenha}
-            onChange={e => setConfirmarSenha(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
+        {/* Futura Página de Login (podemos deixar comentada ou criar um componente simples) */}
+        <Route path="/login" element={<div style={{color: 'white', padding: '40px'}}>Página de Login em construção...</div>} />
 
-        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Cadastrar
-        </button>
-      </form>
-
-      {aviso && (
-        <p style={{
-          marginTop: '20px',
-          padding: '10px',
-          backgroundColor: aviso.startsWith('Sucesso') ? '#2e7d32' : '#d32f2f'
-        }}>
-          {aviso}
-        </p>
-      )}
-    </div>
-  )
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
