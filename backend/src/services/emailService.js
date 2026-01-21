@@ -1,25 +1,15 @@
 import nodemailer from 'nodemailer';
 
-/**
- * Configuramos o transporte usando o serviço do Gmail.
- * O process.env busca as informações que você salvou no arquivo .env.
- */
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-});
-
-/**
- * Função exportada para ser usada em qualquer parte do sistema.
- * @param {string} destinatarioEmail - E-mail de quem vai receber.
- * @param {string} codigo - O código de 6 dígitos gerado no cadastro.
- */
-
-
 export async function enviarCodigoVerificacao(destinatarioEmail, codigo) {
+    // Criamos o transporte aqui dentro para garantir que ele leia o process.env atualizado
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+    });
+
     const corpoEmailHtml = `
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 10px; max-width: 600px; margin: auto;">
             <h2 style="color: #4CAF50;">Seu Código de Verificação</h2>
@@ -31,7 +21,6 @@ export async function enviarCodigoVerificacao(destinatarioEmail, codigo) {
             <p>Este código é válido por 15 minutos. Não o compartilhe com ninguém.</p>
             <p>Atenciosamente,<br>Equipe Controle Financeiro</p>
             <hr style="border: 0; border-top: 1px solid #eee; margin-top: 20px;">
-            <p style="font-size: 12px; color: #888; text-align: center;">Este é um e-mail automático, por favor não responda.</p>
         </div>
     `;
 
@@ -48,7 +37,6 @@ export async function enviarCodigoVerificacao(destinatarioEmail, codigo) {
         return true;
     } catch (error) {
         console.error(`❌ Erro ao enviar o e-mail: ${error.message}`);
-        // Detalhe importante: não paramos a aplicação, apenas logamos o erro.
         return false;
     }
 }
