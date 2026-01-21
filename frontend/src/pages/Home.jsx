@@ -17,7 +17,7 @@ function Home() {
         </button>
         
         <button 
-          onClick={() => navigate('/cadastro')} 
+          onClick={() => navigate('/register')} 
           style={{ ...buttonStyle, backgroundColor: 'transparent', border: '1px solid #4CAF50', marginLeft: '10px' }}
         >
           Quero me registrar

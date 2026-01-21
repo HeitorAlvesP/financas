@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom' // Importamos o navegador
 
 function Register() {
   const navigate = useNavigate() // Hook para mudar de página depois
-  
+
   // Estados que você já criou
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
   const [codigoDigitado, setCodigoDigitado] = useState('')
-  const [etapa, setEtapa] = useState(1) 
+  const [etapa, setEtapa] = useState(1)
 
   const lidarComCadastro = async (e) => {
     e.preventDefault()
@@ -38,18 +38,39 @@ function Register() {
     }
   }
 
-  const validarCodigo = (e) => {
-    e.preventDefault()
-    Swal.fire({
-      title: 'Parabéns!',
-      text: 'Cadastro finalizado com sucesso!',
-      icon: 'success',
-      confirmButtonColor: '#2e7d32'
-    }).then(() => {
-      // Quando tivermos a página de login, mudaremos para navigate('/login')
-      setEtapa(3) 
-    })
-  }
+  const validarCodigo = async (e) => {
+    e.preventDefault();
+
+    try {
+      const resposta = await fetch('http://localhost:3000/api/usuarios/validar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          codigo: codigoDigitado
+        })
+      });
+
+      const dados = await resposta.json();
+
+      if (resposta.ok) {
+        // Se o código estiver correto no banco, o backend retorna 200 (ok)
+        Swal.fire({
+          title: 'Parabéns!',
+          text: 'Cadastro finalizado com sucesso!',
+          icon: 'success',
+          confirmButtonColor: '#2e7d32'
+        }).then(() => {
+          setEtapa(3); // Leva para a tela de Login (conforme sua estrutura atual)
+        });
+      } else {
+        // Se o código estiver errado ou expirado
+        Swal.fire('Erro', dados.erro, 'error');
+      }
+    } catch (err) {
+      Swal.fire('Erro', 'Erro ao conectar com o servidor.', 'error');
+    }
+  };
 
   return (
     <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
@@ -79,10 +100,10 @@ function Register() {
       ) : etapa === 2 ? (
         <form onSubmit={validarCodigo}>
           <p>Digite o código enviado para <strong>{email}</strong>:</p>
-          <input 
-            type="text" 
-            value={codigoDigitado} 
-            onChange={e => setCodigoDigitado(e.target.value)} 
+          <input
+            type="text"
+            value={codigoDigitado}
+            onChange={e => setCodigoDigitado(e.target.value)}
             placeholder="000000"
             style={{ ...inputStyle, textAlign: 'center', fontSize: '20px' }}
           />

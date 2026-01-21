@@ -31,7 +31,6 @@ export const cadastrarUsuario = async (db, req, res) => {
             [nome, email, senhaCriptografada, codigo]
         );
 
-        // Dispara o e-mail (não usamos 'await' aqui para não travar a resposta do usuário)
         enviarCodigoVerificacao(email, codigo);
 
         return res.status(201).json({
@@ -43,6 +42,45 @@ export const cadastrarUsuario = async (db, req, res) => {
             return res.status(400).json({ erro: "Este e-mail já está cadastrado." });
         }
         return res.status(500).json({ erro: "Erro interno ao cadastrar usuário." });
+    }
+};
+/*       ###         */
+
+
+
+/*  #VVALIDA EMAIL   */
+export const validarCodigo = async (db, req, res) => {
+    const { email, codigo } = req.body;
+
+    // Validação básica de entrada
+    if (!email || !codigo) {
+        return res.status(400).json({ erro: "E-mail e código são obrigatórios." });
+    }
+
+    try {
+        // 1. Busca o usuário no banco pelo e-mail
+        const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
+
+        if (!usuario) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+
+        // 2. Compara o código digitado com o código do banco
+        if (usuario.codigo_validacao === codigo) {
+            // 3. Sucesso: Ativa a conta e remove o código para ele não ser usado de novo
+            await db.run(
+                `UPDATE tb_usuario SET email_confirmado = 1, codigo_validacao = NULL WHERE email = ?`,
+                [email]
+            );
+
+            return res.status(200).json({ mensagem: "Conta validada com sucesso!" });
+        } else {
+            return res.status(400).json({ erro: "Código de verificação incorreto." });
+        }
+
+    } catch (error) {
+        console.error("Erro na validação:", error);
+        return res.status(500).json({ erro: "Erro interno ao validar o código." });
     }
 };
 /*       ###         */
