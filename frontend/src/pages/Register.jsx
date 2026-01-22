@@ -54,17 +54,16 @@ function Register() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        // Se o código estiver correto no banco, o backend retorna 200 (ok)
         Swal.fire({
           title: 'Parabéns!',
           text: 'Cadastro finalizado com sucesso!',
           icon: 'success',
           confirmButtonColor: '#2e7d32'
         }).then(() => {
-          setEtapa(3); // Leva para a tela de Login (conforme sua estrutura atual)
+
+          navigate('/login');
         });
       } else {
-        // Se o código estiver errado ou expirado
         Swal.fire('Erro', dados.erro, 'error');
       }
     } catch (err) {
@@ -97,7 +96,9 @@ function Register() {
           <button type="submit" style={buttonStyle}>Cadastrar</button>
           <button type="button" onClick={() => navigate('/')} style={backButtonStyle}>Voltar ao Início</button>
         </form>
-      ) : etapa === 2 ? (
+      ) : (
+        // Aqui só entra se etapa for 2. 
+        // Como o navigate('/login') acontece no Swal, você nunca verá a etapa 3 aqui.
         <form onSubmit={validarCodigo}>
           <p>Digite o código enviado para <strong>{email}</strong>:</p>
           <input
@@ -109,11 +110,6 @@ function Register() {
           />
           <button type="submit" style={buttonStyle}>Finalizar Cadastro</button>
         </form>
-      ) : (
-        <div style={{ textAlign: 'center' }}>
-          <p>Conta validada! Agora você pode fazer login.</p>
-          <button onClick={() => navigate('/login')} style={buttonStyle}>Ir para Login</button>
-        </div>
       )}
     </div>
   )
