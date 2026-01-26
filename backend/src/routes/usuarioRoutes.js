@@ -1,5 +1,5 @@
 import express from 'express';
-import { cadastrarUsuario, validarCodigo } from '../controllers/usuarioController.js'; // Importe a nova função
+import { cadastrarUsuario, validarCodigo, loginUsuario } from '../controllers/usuarioController.js'; // Importe a nova função
 
 const router = express.Router();
 
