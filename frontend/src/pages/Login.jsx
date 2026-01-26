@@ -32,16 +32,27 @@ function Login() {
           navigate('/dashboard');
         });
       } else if (resposta.status === 403) {
-        // Se o erro for 403 (Não confirmado), manda para a nova página
-        Swal.fire({
-          title: 'E-mail não confirmado',
-          text: 'Vamos te levar para a página de validação.',
-          icon: 'warning',
-          confirmButtonColor: '#2e7d32'
-        }).then(() => {
-          // Passamos o email no state para a próxima página saber quem validar
-          navigate('/validacao-pendente', { state: { email: email } });
-        });
+        // 1. Chamamos a rota de reenvio silenciosamente
+        try {
+          await fetch('http://localhost:3000/api/usuarios/reenviar-codigo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          });
+
+          // 2. Exibimos o alerta que você solicitou
+          Swal.fire({
+            title: 'E-mail não confirmado',
+            text: 'Encaminhamos um novo código para seu e-mail.',
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32'
+          }).then(() => {
+            // 3. Leva para a página de validação pendente
+            navigate('/validacao-pendente', { state: { email: email } });
+          });
+        } catch (err) {
+          Swal.fire('Erro', 'Não foi possível reenviar o código.', 'error');
+        }
       } else {
         // Caso o e-mail não esteja confirmado, a senha esteja errada, etc.
         Swal.fire('Erro no acesso', dados.erro, 'error');

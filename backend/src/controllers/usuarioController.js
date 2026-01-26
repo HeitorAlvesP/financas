@@ -127,3 +127,31 @@ export const loginUsuario = async (db, req, res) => {
     }
 };
 /*       ###         */
+
+
+
+/*  REENVIAR CODIGO  */
+export const reenviarCodigo = async (db, req, res) => {
+    const { email } = req.body;
+
+    try {
+        const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
+
+        if (!usuario) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+        const novoCodigo = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await db.run(
+            `UPDATE tb_usuario SET codigo_validacao = ? WHERE email = ?`,
+            [novoCodigo, email]
+        );
+
+        enviarCodigoVerificacao(email, novoCodigo);
+
+        return res.status(200).json({ mensagem: "Novo código enviado!" });
+    } catch (error) {
+        return res.status(500).json({ erro: "Erro ao reenviar código." });
+    }
+};
+/*       ###         */
