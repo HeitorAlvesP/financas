@@ -84,3 +84,46 @@ export const validarCodigo = async (db, req, res) => {
     }
 };
 /*       ###         */
+
+
+
+/*     LOGIN         */
+export const loginUsuario = async (db, req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ erro: "Preencha todos os campos." });
+    }
+
+    try {
+        // 1. Busca o usuário
+        const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
+
+        if (!usuario) {
+            return res.status(401).json({ erro: "E-mail ou senha incorretos." });
+        }
+
+        // 2. Verifica se o e-mail foi validado
+        if (usuario.email_confirmado !== 1) {
+            return res.status(403).json({ erro: "Por favor, confirme seu e-mail antes de logar." });
+        }
+
+        // 3. Compara a senha digitada com o hash do banco
+        const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+
+        if (senhaCorreta) {
+            // Sucesso! (Futuramente aqui geraremos um Token)
+            return res.status(200).json({ 
+                mensagem: "Login realizado com sucesso!",
+                usuario: { nome: usuario.nome, email: usuario.email }
+            });
+        } else {
+            return res.status(401).json({ erro: "E-mail ou senha incorretos." });
+        }
+
+    } catch (error) {
+        console.error("Erro no login:", error);
+        return res.status(500).json({ erro: "Erro interno no servidor." });
+    }
+};
+/*       ###         */
