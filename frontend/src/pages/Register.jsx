@@ -6,12 +6,13 @@ function Register() {
   const navigate = useNavigate() // Hook para mudar de página depois
 
   // Estados que você já criou
-  const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [confirmarSenha, setConfirmarSenha] = useState('')
-  const [codigoDigitado, setCodigoDigitado] = useState('')
-  const [etapa, setEtapa] = useState(1)
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [codigoDigitado, setCodigoDigitado] = useState('');
+  const [etapa, setEtapa] = useState(1);
+  const [carregando, setCarregando] = useState(false);
 
   const lidarComCadastro = async (e) => {
     e.preventDefault()
@@ -71,11 +72,32 @@ function Register() {
     }
   };
 
+  const lidarComReenvio = async () => {
+    setCarregando(true);
+    try {
+      const resposta = await fetch('http://localhost:3000/api/usuarios/reenviar-codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }) // O 'email' já está no seu useState
+      });
+
+      if (resposta.ok) {
+        Swal.fire('Enviado!', 'Um novo código foi enviado para seu e-mail.', 'success');
+      } else {
+        Swal.fire('Erro', 'Não foi possível reenviar o código.', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Erro', 'Erro de conexão.', 'error');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   return (
     <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
       <h1>{etapa === 1 ? 'Crie sua conta' : 'Validação'}</h1>
 
-      {etapa === 1 ? (
+      {etapa === 1 && (
         <form onSubmit={lidarComCadastro}>
           <div style={formGroup}>
             <label>Nome:</label>
@@ -96,9 +118,8 @@ function Register() {
           <button type="submit" style={buttonStyle}>Cadastrar</button>
           <button type="button" onClick={() => navigate('/')} style={backButtonStyle}>Voltar ao Início</button>
         </form>
-      ) : (
-        // Aqui só entra se etapa for 2. 
-        // Como o navigate('/login') acontece no Swal, você nunca verá a etapa 3 aqui.
+      )}
+      {etapa === 2 && (
         <form onSubmit={validarCodigo}>
           <p>Digite o código enviado para <strong>{email}</strong>:</p>
           <input
@@ -106,9 +127,29 @@ function Register() {
             value={codigoDigitado}
             onChange={e => setCodigoDigitado(e.target.value)}
             placeholder="000000"
+            maxLength="6"
             style={{ ...inputStyle, textAlign: 'center', fontSize: '20px' }}
           />
           <button type="submit" style={buttonStyle}>Finalizar Cadastro</button>
+
+          {/* NOVO BOTÃO DE REENVIO NO CADASTRO */}
+          <div style={{ textAlign: 'center', marginTop: '15px' }}>
+            <button
+              type="button"
+              onClick={lidarComReenvio}
+              disabled={carregando}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#4CAF50',
+                textDecoration: 'underline',
+                cursor: carregando ? 'not-allowed' : 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              {carregando ? 'Enviando...' : 'Não recebi o código? Reenviar e-mail'}
+            </button>
+          </div>
         </form>
       )}
     </div>
