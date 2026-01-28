@@ -52,22 +52,18 @@ export const cadastrarUsuario = async (db, req, res) => {
 export const validarCodigo = async (db, req, res) => {
     const { email, codigo } = req.body;
 
-    // Validação básica de entrada
     if (!email || !codigo) {
         return res.status(400).json({ erro: "E-mail e código são obrigatórios." });
     }
 
     try {
-        // 1. Busca o usuário no banco pelo e-mail
         const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
 
         if (!usuario) {
             return res.status(404).json({ erro: "Usuário não encontrado." });
         }
 
-        // 2. Compara o código digitado com o código do banco
         if (usuario.codigo_validacao === codigo) {
-            // 3. Sucesso: Ativa a conta e remove o código para ele não ser usado de novo
             await db.run(
                 `UPDATE tb_usuario SET email_confirmado = 1, codigo_validacao = NULL WHERE email = ?`,
                 [email]
@@ -96,23 +92,18 @@ export const loginUsuario = async (db, req, res) => {
     }
 
     try {
-        // 1. Busca o usuário
         const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
 
         if (!usuario) {
             return res.status(401).json({ erro: "E-mail ou senha incorretos." });
         }
-
-        // 2. Verifica se o e-mail foi validado
         if (usuario.email_confirmado !== 1) {
             return res.status(403).json({ erro: "Por favor, confirme seu e-mail antes de logar." });
         }
 
-        // 3. Compara a senha digitada com o hash do banco
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
         if (senhaCorreta) {
-            // Sucesso! (Futuramente aqui geraremos um Token)
             return res.status(200).json({ 
                 mensagem: "Login realizado com sucesso!",
                 usuario: { nome: usuario.nome, email: usuario.email }
@@ -152,6 +143,59 @@ export const reenviarCodigo = async (db, req, res) => {
         return res.status(200).json({ mensagem: "Novo código enviado!" });
     } catch (error) {
         return res.status(500).json({ erro: "Erro ao reenviar código." });
+    }
+};
+/*       ###         */
+
+
+
+/*  VERIFICA EMAIL  */
+export const solicitarRecuperacao = async (db, req, res) => {
+    const { email } = req.body;
+
+    try {
+        const usuario = await db.get(`SELECT * FROM tb_usuario WHERE email = ?`, [email]);
+
+        if (!usuario) {
+            return res.status(404).json({ erro: "Email não está cadastrado no nosso sistema" });
+        }
+
+        const codigoRecuperacao = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await db.run(
+            `UPDATE tb_usuario SET codigo_validacao = ? WHERE email = ?`,
+            [codigoRecuperacao, email]
+        );
+
+        enviarCodigoVerificacao(email, codigoRecuperacao);
+
+        return res.status(200).json({ mensagem: "Código de recuperação enviado!" });
+    } catch (error) {
+        return res.status(500).json({ erro: "Erro ao processar solicitação." });
+    }
+};
+/*       ###         */
+
+
+
+/* REDEFINICAO SENHA */
+export const redefinirSenha = async (db, req, res) => {
+    const { email, novaSenha, confirmarNovaSenha } = req.body;
+
+    if (novaSenha !== confirmarNovaSenha) {
+        return res.status(400).json({ erro: "As senhas não coincidem." });
+    }
+
+    try {
+        const hash = await bcrypt.hash(novaSenha, 10);
+        await db.run(
+            `UPDATE tb_usuario SET senha = ? WHERE email = ?`,
+            [hash, email]
+        );
+
+        return res.status(200).json({ mensagem: "Senha atualizada com sucesso!" });
+    } catch (error) {
+        return res.status(500).json({ erro: "Erro ao atualizar senha." });
     }
 };
 /*       ###         */

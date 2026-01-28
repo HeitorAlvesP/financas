@@ -1,8 +1,12 @@
 import express from 'express';
-import { cadastrarUsuario,
-        validarCodigo, 
-        loginUsuario,
-        reenviarCodigo } from '../controllers/usuarioController.js';
+import {
+    cadastrarUsuario,
+    validarCodigo,
+    loginUsuario,
+    reenviarCodigo,
+    solicitarRecuperacao,
+    redefinirSenha
+} from '../controllers/usuarioController.js';
 
 const router = express.Router();
 
@@ -17,6 +21,8 @@ export default function (db) {
     router.post('/validar', (req, res) => validarCodigo(db, req, res));
     router.post('/login', (req, res) => loginUsuario(db, req, res));
     router.post('/reenviar-codigo', (req, res) => reenviarCodigo(db, req, res));
+    router.post('/solicitar-recuperacao', (req, res) => solicitarRecuperacao(db, req, res));
+    router.post('/redefinir-senha', (req, res) => redefinirSenha(db, req, res));
 
     return router;
 }

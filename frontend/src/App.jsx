@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ValidacaoPendente from './pages/ValidacaoPendente';
 import Dashboard from './pages/Dashboard';
+import RecuperarSenha from './pages/RecuperarSenha';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/validacao-pendente" element={<ValidacaoPendente />} />
+          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         </Route>
 
         {/* Dashboard fica fora para não ter a imagem do astronauta ao fundo */}

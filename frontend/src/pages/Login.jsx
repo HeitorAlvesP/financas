@@ -117,6 +117,18 @@ function Login() {
         >
           Não tem uma conta? Cadastre-se
         </button>
+
+        <div style={{ textAlign: 'right', marginTop: '5px' }}>
+          <span
+            onClick={() => navigate('/recuperar-senha')}
+            style={linkButtonStyle}
+            onMouseEnter={(e) => e.target.style.color = 'var(--neon-green)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--text-gray)'}
+          >
+            Esqueci minha senha
+          </span>
+        </div>
+
       </form>
     </div>
   );
