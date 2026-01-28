@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import Swal from 'sweetalert2'
-import { useNavigate } from 'react-router-dom' // Importamos o navegador
+import { useNavigate } from 'react-router-dom'
 
 function Register() {
-  const navigate = useNavigate() // Hook para mudar de página depois
+  const navigate = useNavigate()
 
-  // Estados que você já criou
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -41,15 +40,11 @@ function Register() {
 
   const validarCodigo = async (e) => {
     e.preventDefault();
-
     try {
       const resposta = await fetch('http://localhost:3000/api/usuarios/validar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          codigo: codigoDigitado
-        })
+        body: JSON.stringify({ email, codigo: codigoDigitado })
       });
 
       const dados = await resposta.json();
@@ -60,10 +55,7 @@ function Register() {
           text: 'Cadastro finalizado com sucesso!',
           icon: 'success',
           confirmButtonColor: '#2e7d32'
-        }).then(() => {
-
-          navigate('/login');
-        });
+        }).then(() => navigate('/login'));
       } else {
         Swal.fire('Erro', dados.erro, 'error');
       }
@@ -78,7 +70,7 @@ function Register() {
       const resposta = await fetch('http://localhost:3000/api/usuarios/reenviar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }) // O 'email' já está no seu useState
+        body: JSON.stringify({ email })
       });
 
       if (resposta.ok) {
@@ -94,58 +86,83 @@ function Register() {
   };
 
   return (
-    <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
-      <h1>{etapa === 1 ? 'Crie sua conta' : 'Validação'}</h1>
+    <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto', color: 'white' }}>
+      <h2 style={{ color: 'var(--neon-green)', textAlign: 'center', fontSize: '2rem', marginBottom: '30px' }}>
+        {etapa === 1 ? 'CRIE SUA CONTA' : 'VALIDAÇÃO'}
+      </h2>
 
-      {etapa === 1 && (
+      {etapa === 1 ? (
         <form onSubmit={lidarComCadastro}>
           <div style={formGroup}>
-            <label>Nome:</label>
-            <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={inputStyle} />
+            <label style={labelStyle}>Nome:</label>
+            <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={inputStyle} placeholder="Seu nome" />
           </div>
           <div style={formGroup}>
-            <label>E-mail:</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+            <label style={labelStyle}>E-mail:</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} placeholder="seu@email.com" />
           </div>
           <div style={formGroup}>
-            <label>Senha:</label>
-            <input type="password" value={senha} onChange={e => setSenha(e.target.value)} style={inputStyle} />
+            <label style={labelStyle}>Senha:</label>
+            <input type="password" value={senha} onChange={e => setSenha(e.target.value)} style={inputStyle} placeholder="******" />
           </div>
           <div style={formGroup}>
-            <label>Confirmar Senha:</label>
-            <input type="password" value={confirmarSenha} onChange={e => setConfirmarSenha(e.target.value)} style={inputStyle} />
+            <label style={labelStyle}>Confirmar Senha:</label>
+            <input type="password" value={confirmarSenha} onChange={e => setConfirmarSenha(e.target.value)} style={inputStyle} placeholder="******" />
           </div>
-          <button type="submit" style={buttonStyle}>Cadastrar</button>
-          <button type="button" onClick={() => navigate('/')} style={backButtonStyle}>Voltar ao Início</button>
+
+          <button
+            type="submit"
+            style={buttonStyle}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.02)';
+              e.target.style.boxShadow = '0 0 25px var(--neon-green)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
+            }}
+          >
+            CADASTRAR
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            style={backButtonStyle}
+            onMouseEnter={(e) => {
+              e.target.style.borderColor = 'var(--neon-green)';
+              e.target.style.color = 'var(--neon-green)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.borderColor = 'var(--border-color)';
+              e.target.style.color = 'var(--text-gray)';
+            }}
+          >
+            VOLTAR AO LOGIN
+          </button>
+
         </form>
-      )}
-      {etapa === 2 && (
+      ) : (
         <form onSubmit={validarCodigo}>
-          <p>Digite o código enviado para <strong>{email}</strong>:</p>
+          <p style={{ textAlign: 'center', color: 'var(--text-gray)', marginBottom: '20px' }}>
+            Digite o código enviado para <br /><strong>{email}</strong>
+          </p>
           <input
             type="text"
             value={codigoDigitado}
             onChange={e => setCodigoDigitado(e.target.value)}
             placeholder="000000"
             maxLength="6"
-            style={{ ...inputStyle, textAlign: 'center', fontSize: '20px' }}
+            style={{ ...inputStyle, textAlign: 'center', fontSize: '24px', letterSpacing: '5px' }}
           />
-          <button type="submit" style={buttonStyle}>Finalizar Cadastro</button>
+          <button type="submit" style={buttonStyle}>FINALIZAR CADASTRO</button>
 
-          {/* NOVO BOTÃO DE REENVIO NO CADASTRO */}
-          <div style={{ textAlign: 'center', marginTop: '15px' }}>
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <button
               type="button"
               onClick={lidarComReenvio}
               disabled={carregando}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#4CAF50',
-                textDecoration: 'underline',
-                cursor: carregando ? 'not-allowed' : 'pointer',
-                fontSize: '14px'
-              }}
+              style={reenvioButtonStyle(carregando)}
             >
               {carregando ? 'Enviando...' : 'Não recebi o código? Reenviar e-mail'}
             </button>
@@ -156,36 +173,62 @@ function Register() {
   )
 }
 
-// Estilos básicos para manter a organização
-const formGroup = { marginBottom: '15px' }
+// --- ESTILOS ---
+
+const formGroup = { marginBottom: '15px' };
+
+const labelStyle = { display: 'block', color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '5px' };
 
 const inputStyle = {
   width: '100%',
   padding: '14px 16px',
-  marginTop: '8px',
   backgroundColor: 'var(--input-bg)',
   border: '1px solid var(--border-color)',
   borderRadius: '12px',
   color: 'white',
+  fontSize: '1rem',
   outline: 'none',
-  transition: '0.3s'
+  boxSizing: 'border-box',
+  transition: 'all 0.3s ease'
 };
 
 const buttonStyle = {
   width: '100%',
   padding: '16px',
-  marginTop: '24px',
+  marginTop: '15px',
   backgroundColor: 'var(--neon-green)',
-  color: '#f4f4f4',
+  color: '#000',
   border: 'none',
   borderRadius: '12px',
   fontWeight: 'bold',
-  fontSize: '16px',
+  fontSize: '1rem',
   cursor: 'pointer',
-  boxShadow: '0 0 20px var(--neon-glow)', // O segredo do brilho
-  transition: '0.3s transform'
+  boxSizing: 'border-box',
+  boxShadow: '0 0 15px var(--neon-glow)',
+  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
 };
 
-const backButtonStyle = { width: '100%', marginTop: '10px', padding: '10px', backgroundColor: 'transparent', color: 'gray', border: '1px solid gray', borderRadius: '4px', cursor: 'pointer' }
+const backButtonStyle = {
+  width: '100%',
+  marginTop: '12px',
+  padding: '14px',
+  backgroundColor: 'transparent',
+  color: 'var(--text-gray)',
+  border: '1px solid var(--border-color)',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+  fontSize: '0.9rem'
+};
+
+const reenvioButtonStyle = (carregando) => ({
+  background: 'none',
+  border: 'none',
+  color: 'var(--neon-green)',
+  textDecoration: 'underline',
+  cursor: carregando ? 'not-allowed' : 'pointer',
+  fontSize: '14px',
+  opacity: carregando ? 0.6 : 1
+});
 
 export default Register;
