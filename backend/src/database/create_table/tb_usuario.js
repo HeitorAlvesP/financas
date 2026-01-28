@@ -8,7 +8,7 @@ export async function createTableUsuario(db) {
         CREATE TABLE IF NOT EXISTS tb_usuario (
             id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
+            email TEXT UNIQUE,
             senha TEXT NOT NULL,
             status INTEGER DEFAULT 1,               -- 1: Ativo (conforme solicitado)
             email_confirmado INTEGER DEFAULT 0,     -- 1: ativo

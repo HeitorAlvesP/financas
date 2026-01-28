@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Register() {
   const navigate = useNavigate()
@@ -91,94 +92,150 @@ function Register() {
         {etapa === 1 ? 'CRIE SUA CONTA' : 'VALIDAÇÃO'}
       </h2>
 
-      {etapa === 1 ? (
-        <form onSubmit={lidarComCadastro}>
-          <div style={formGroup}>
-            <label style={labelStyle}>Nome:</label>
-            <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={inputStyle} placeholder="Seu nome" />
-          </div>
-          <div style={formGroup}>
-            <label style={labelStyle}>E-mail:</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} placeholder="seu@email.com" />
-          </div>
-          <div style={formGroup}>
-            <label style={labelStyle}>Senha:</label>
-            <input type="password" value={senha} onChange={e => setSenha(e.target.value)} style={inputStyle} placeholder="******" />
-          </div>
-          <div style={formGroup}>
-            <label style={labelStyle}>Confirmar Senha:</label>
-            <input type="password" value={confirmarSenha} onChange={e => setConfirmarSenha(e.target.value)} style={inputStyle} placeholder="******" />
-          </div>
+      <AnimatePresence mode="wait">
+        {/* --- ETAPA 1: FORMULÁRIO DE DADOS --- */}
+        {etapa === 1 && (
 
-          <button
-            type="submit"
-            style={buttonStyle}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'scale(1.02)';
-              e.target.style.boxShadow = '0 0 25px var(--neon-green)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'scale(1)';
-              e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
-            }}
+          <motion.div
+            key="etapa1"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ duration: 0.3 }}
           >
-            CADASTRAR
-          </button>
 
-          <button
-            type="button"
-            onClick={() => navigate('/login')}
-            style={backButtonStyle}
-            onMouseEnter={(e) => {
-              e.target.style.borderColor = 'var(--neon-green)';
-              e.target.style.color = 'var(--neon-green)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.borderColor = 'var(--border-color)';
-              e.target.style.color = 'var(--text-gray)';
-            }}
+            <form onSubmit={lidarComCadastro}>
+              <div style={formGroup}>
+                <label style={labelStyle}>Nome:</label>
+                <input
+                  type="text" value={nome} onChange={e => setNome(e.target.value)} style={inputStyle} placeholder="Seu nome"
+                  onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
+                  onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+                />
+              </div>
+              <div style={formGroup}>
+                <label style={labelStyle}>E-mail:</label>
+                <input
+                  type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} placeholder="seu@email.com"
+                  onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
+                  onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+                />
+              </div>
+              <div style={formGroup}>
+                <label style={labelStyle}>Senha:</label>
+                <input
+                  type="password" value={senha} onChange={e => setSenha(e.target.value)} style={inputStyle} placeholder="******"
+                  onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
+                  onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+                />
+              </div>
+              <div style={formGroup}>
+                <label style={labelStyle}>Confirmar Senha:</label>
+                <input
+                  type="password" value={confirmarSenha} onChange={e => setConfirmarSenha(e.target.value)} style={inputStyle} placeholder="******"
+                  onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
+                  onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+                />
+              </div>
+
+              <button
+                type="submit"
+                style={buttonStyle}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.02)';
+                  e.target.style.boxShadow = '0 0 25px var(--neon-green)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
+                }}
+              >
+                CADASTRAR
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                style={backButtonStyle}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = 'var(--neon-green)';
+                  e.target.style.color = 'var(--neon-green)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = 'var(--border-color)';
+                  e.target.style.color = 'var(--text-gray)';
+                }}
+              >
+                VOLTAR AO LOGIN
+              </button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* --- ETAPA 2: VALIDAÇÃO DE CÓDIGO --- */}
+        {etapa === 2 && (
+          <motion.div
+            key="etapa2"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.3 }}
           >
-            VOLTAR AO LOGIN
-          </button>
 
-        </form>
-      ) : (
-        <form onSubmit={validarCodigo}>
-          <p style={{ textAlign: 'center', color: 'var(--text-gray)', marginBottom: '20px' }}>
-            Digite o código enviado para <br /><strong>{email}</strong>
-          </p>
-          <input
-            type="text"
-            value={codigoDigitado}
-            onChange={e => setCodigoDigitado(e.target.value)}
-            placeholder="000000"
-            maxLength="6"
-            style={{ ...inputStyle, textAlign: 'center', fontSize: '24px', letterSpacing: '5px' }}
-          />
-          <button type="submit" style={buttonStyle}>FINALIZAR CADASTRO</button>
+            <form onSubmit={validarCodigo}>
+              <p style={{ textAlign: 'center', color: 'var(--text-gray)', marginBottom: '20px' }}>
+                Digite o código enviado para <br /><strong>{email}</strong>
+              </p>
+              <input
+                type="text"
+                value={codigoDigitado}
+                onChange={e => setCodigoDigitado(e.target.value)}
+                placeholder="000000"
+                maxLength="6"
+                style={{ ...inputStyle, textAlign: 'center', fontSize: '24px', letterSpacing: '5px' }}
+                onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
+                onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+              />
 
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button
-              type="button"
-              onClick={lidarComReenvio}
-              disabled={carregando}
-              style={reenvioButtonStyle(carregando)}
-            >
-              {carregando ? 'Enviando...' : 'Não recebi o código? Reenviar e-mail'}
-            </button>
-          </div>
-        </form>
-      )}
-    </div>
+              <button
+                type="submit"
+                style={buttonStyle}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.02)';
+                  e.target.style.boxShadow = '0 0 25px var(--neon-green)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
+                }}
+              >
+                FINALIZAR CADASTRO
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  onClick={lidarComReenvio}
+                  disabled={carregando}
+                  style={reenvioButtonStyle(carregando)}
+                  onMouseEnter={(e) => { if (!carregando) e.target.style.color = 'var(--neon-green)' }}
+                  onMouseLeave={(e) => { if (!carregando) e.target.style.color = 'white' }}
+                >
+                  {carregando ? 'Enviando...' : 'Não recebi o código? Reenviar e-mail'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+
+        )}
+      </AnimatePresence>
+    </div >
   )
 }
 
 // --- ESTILOS ---
-
 const formGroup = { marginBottom: '15px' };
-
 const labelStyle = { display: 'block', color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '5px' };
-
 const inputStyle = {
   width: '100%',
   padding: '14px 16px',
@@ -189,9 +246,8 @@ const inputStyle = {
   fontSize: '1rem',
   outline: 'none',
   boxSizing: 'border-box',
-  transition: 'all 0.3s ease'
+  transition: 'all 0.3s ease',
 };
-
 const buttonStyle = {
   width: '100%',
   padding: '16px',
@@ -207,7 +263,6 @@ const buttonStyle = {
   boxShadow: '0 0 15px var(--neon-glow)',
   transition: 'transform 0.2s ease, box-shadow 0.2s ease'
 };
-
 const backButtonStyle = {
   width: '100%',
   marginTop: '12px',
@@ -218,9 +273,9 @@ const backButtonStyle = {
   borderRadius: '12px',
   cursor: 'pointer',
   boxSizing: 'border-box',
-  fontSize: '0.9rem'
+  fontSize: '0.9rem',
+  transition: 'all 0.3s ease'
 };
-
 const reenvioButtonStyle = (carregando) => ({
   background: 'none',
   border: 'none',
@@ -228,7 +283,8 @@ const reenvioButtonStyle = (carregando) => ({
   textDecoration: 'underline',
   cursor: carregando ? 'not-allowed' : 'pointer',
   fontSize: '14px',
-  opacity: carregando ? 0.6 : 1
+  opacity: carregando ? 0.6 : 1,
+  transition: 'color 0.3s ease'
 });
 
 export default Register;
