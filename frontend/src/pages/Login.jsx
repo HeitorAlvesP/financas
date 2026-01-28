@@ -103,7 +103,31 @@ function Login() {
 }
 
 // Estilos mantidos para consistência visual
-const inputStyle = { width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box', color: 'black' };
-const buttonStyle = { width: '100%', padding: '12px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' };
+const inputStyle = {
+  width: '100%',
+  padding: '14px 16px',
+  marginTop: '8px',
+  backgroundColor: 'var(--input-bg)',
+  border: '1px solid var(--border-color)',
+  borderRadius: '12px',
+  color: 'white',
+  outline: 'none',
+  transition: '0.3s'
+};
+
+const buttonStyle = {
+  width: '100%',
+  padding: '16px',
+  marginTop: '24px',
+  backgroundColor: 'var(--neon-green)',
+  color: '#000000',
+  border: 'none',
+  borderRadius: '12px',
+  fontWeight: 'bold',
+  fontSize: '16px',
+  cursor: 'pointer',
+  boxShadow: '0 0 20px var(--neon-glow)', // O segredo do brilho
+  transition: '0.3s transform'
+};
 
 export default Login;

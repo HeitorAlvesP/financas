@@ -1,23 +1,27 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Register from './pages/Register';
+
+// Importando o novo Layout e as Páginas
+import AuthLayout from './components/AuthLayout';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import Register from './pages/Register';
 import ValidacaoPendente from './pages/ValidacaoPendente';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Rota "Pai" que carrega o fundo fixo e a imagem */}
+        <Route element={<AuthLayout />}>
+          {/* Rotas "Filhas" que aparecem dentro do Outlet do AuthLayout */}
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/validacao-pendente" element={<ValidacaoPendente />} />
+        </Route>
 
-        <Route path="/" element={<Login />} /> 
-        {/* Quando pronto o home altere aqui para {<Home />} e acesse o aquivo Login e d escomente o botao*/}
-        
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        {/* Dashboard fica fora para não ter a imagem do astronauta ao fundo */}
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/validacao-pendente" element={<ValidacaoPendente />} />
-
       </Routes>
     </Router>
   );
