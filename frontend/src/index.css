@@ -5,6 +5,7 @@
   --neon-glow: rgba(0, 255, 136, 0.3);
   --input-bg: #1f1f27;
   --border-color: #2d2d3a;
+  --neon-glow-claro: rgba(0, 255, 136, 0.696);
 }
 
 body {

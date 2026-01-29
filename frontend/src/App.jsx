@@ -12,12 +12,13 @@ import ValidacaoPendente from './pages/ValidacaoPendente';
 
 // Páginas Privadas
 import Dashboard from './pages/Dashboard';
+import MinhaConta from './pages/MinhaConta';
 
 function App() {
   return (
     <Router>
       <Routes>
-        
+
         {/* --- ROTAS PÚBLICAS (Com a ilustração e fundo radial) --- */}
         <Route element={<AuthLayout />}>
           <Route path="/" element={<Navigate to="/login" />} />
@@ -30,10 +31,10 @@ function App() {
         {/* --- ROTAS PRIVADAS (Com Menu Lateral e Fundo Escuro) --- */}
         <Route element={<LayoutPrivado />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Futuramente você adicionará aqui:
-              <Route path="/transacoes" element={<Transacoes />} />
-              <Route path="/categorias" element={<Categorias />} /> 
-          */}
+          <Route path="/transacoes" element={<Dashboard />} />
+          <Route path="/categorias" element={<Dashboard />} />
+          <Route path="/configuracoes" element={<Dashboard />} />
+          <Route path="/perfil" element={<MinhaConta />} />
         </Route>
 
         {/* Rota de fallback para 404 - Opcional */}
