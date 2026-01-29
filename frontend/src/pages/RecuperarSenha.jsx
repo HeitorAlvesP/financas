@@ -150,8 +150,12 @@ function RecuperarSenha() {
             </AnimatePresence>
 
             <button
+
+                type="button"
                 onClick={() => navigate('/login')}
                 style={backButtonStyle}
+                onMouseEnter={(e) => e.target.style.color = 'var(--neon-green)'}
+                onMouseLeave={(e) => e.target.style.color = 'var(--text-gray)'}
             >
                 VOLTAR AO LOGIN
             </button>
