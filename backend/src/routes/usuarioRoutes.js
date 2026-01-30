@@ -23,6 +23,7 @@ export default function (db) {
     router.post('/reenviar-codigo', (req, res) => reenviarCodigo(db, req, res));
     router.post('/solicitar-recuperacao', (req, res) => solicitarRecuperacao(db, req, res));
     router.post('/redefinir-senha', (req, res) => redefinirSenha(db, req, res));
+    router.get('/perfil/:email', (req, res) => buscarPerfil(db, req, res));
 
     return router;
 }

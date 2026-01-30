@@ -199,3 +199,26 @@ export const redefinirSenha = async (db, req, res) => {
     }
 };
 /*       ###         */
+
+
+
+/*  CARREGA DADOS   */
+export const buscarPerfil = async (db, req, res) => {
+    const { email } = req.params;
+
+    try {
+        const usuario = await db.get(
+            `SELECT nome, email, cpf, data_nascimento, us_completo FROM tb_usuario WHERE email = ?`,
+            [email]
+        );
+
+        if (!usuario) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+
+        return res.status(200).json(usuario);
+    } catch (error) {
+        return res.status(500).json({ erro: "Erro ao buscar dados do perfil." });
+    }
+};
+/*       ###         */
