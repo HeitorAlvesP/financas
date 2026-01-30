@@ -203,22 +203,29 @@ export const redefinirSenha = async (db, req, res) => {
 
 
 /*  CARREGA DADOS   */
-export const buscarPerfil = async (db, req, res) => {
-    const { email } = req.params;
+export const buscarPerfilPorId = async (db, req, res) => {
+    // Pegamos o id que virá na rota: /perfil/:id
+    const { id } = req.params;
 
     try {
+        // Buscamos exatamente as colunas que você quer exibir agora
         const usuario = await db.get(
-            `SELECT nome, email, cpf, data_nascimento, us_completo FROM tb_usuario WHERE email = ?`,
-            [email]
+            `SELECT id_usuario, nome, email, cpf, data_nascimento, us_completo 
+             FROM tb_usuario 
+             WHERE id_usuario = ?`,
+            [id]
         );
 
         if (!usuario) {
             return res.status(404).json({ erro: "Usuário não encontrado." });
         }
 
+        // Retornamos o objeto com os dados para o Frontend
         return res.status(200).json(usuario);
+        
     } catch (error) {
-        return res.status(500).json({ erro: "Erro ao buscar dados do perfil." });
+        console.error("Erro ao buscar perfil:", error);
+        return res.status(500).json({ erro: "Erro interno no servidor ao buscar perfil." });
     }
 };
 /*       ###         */
