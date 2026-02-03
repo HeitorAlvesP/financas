@@ -1,28 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
 
 function MinhaConta() {
     // Estados iniciais (depois virão do seu banco de dados)
-    const [nome, setNome] = useState('Heitor');
-    const [email, setEmail] = useState('seu@email.com');
-    const [cpf, setCpf] = useState(''); // Novo campo
-    const [nascimento, setNascimento] = useState(''); // Novo campo
+    const [nome, setNome] = useState('');
+    const [email, setEmail] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [nascimento, setNascimento] = useState('');
     const [senha, setSenha] = useState('********');
+    const [carregando, setCarregando] = useState(true);
 
-    const handleSalvar = (e) => {
-        e.preventDefault();
-        Swal.fire('Sucesso', 'Informações atualizadas com sucesso!', 'success');
-    };
 
-    const formatarCPF = (valor) => {
-        return valor
-            .replace(/\D/g, '') // Remove tudo que não é número
-            .replace(/(\d{3})(\d)/, '$1.$2') // Coloca ponto após os 3 primeiros números
-            .replace(/(\d{3})(\d)/, '$1.$2') // Coloca ponto após os 6 primeiros números
-            .replace(/(\d{3})(\d{1,2})/, '$1-$2') // Coloca hífen após os 9 primeiros números
-            .replace(/(-\d{2})\d+?$/, '$1'); // Impede que digite mais de 11 números
-    };
+    useEffect(() => {
+        const buscarDadosPerfil = async () => {
+            const idUsuario = localStorage.getItem('usuarioId');
+
+            if (!idUsuario) {
+                console.error("ID do usuário não encontrado");
+                return;
+            }
+
+            try {
+                // Chamamos a rota que definimos anteriormente: /perfil/:id
+                const response = await fetch(`http://localhost:5173/perfil/${idUsuario}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    setNome(data.nome);
+                    setEmail(data.email);
+                    // Se o CPF já existir, aplicamos a máscara que você criou
+                    setCpf(data.cpf ? formatarCPF(data.cpf) : '');
+                    setNascimento(data.data_nascimento || '');
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+            } finally {
+                setCarregando(false);
+            }
+        };
+
+        buscarDadosPerfil();
+    }, []);
+
+    if (carregando) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--neon-green)' }}>
+                Carregando dados do perfil...
+            </div>
+        );
+    }
 
     return (
         <div style={paginaCentralizadaStyle}>

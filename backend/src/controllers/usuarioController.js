@@ -97,6 +97,7 @@ export const loginUsuario = async (db, req, res) => {
         if (!usuario) {
             return res.status(401).json({ erro: "E-mail ou senha incorretos." });
         }
+        
         if (usuario.email_confirmado !== 1) {
             return res.status(403).json({ erro: "Por favor, confirme seu e-mail antes de logar." });
         }
@@ -106,7 +107,11 @@ export const loginUsuario = async (db, req, res) => {
         if (senhaCorreta) {
             return res.status(200).json({ 
                 mensagem: "Login realizado com sucesso!",
-                usuario: { nome: usuario.nome, email: usuario.email }
+                usuario: { 
+                    id: usuario.id_usuario,
+                    nome: usuario.nome, 
+                    email: usuario.email 
+                }
             });
         } else {
             return res.status(401).json({ erro: "E-mail ou senha incorretos." });
