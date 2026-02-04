@@ -28,7 +28,8 @@ function Login() {
           timer: 1500,
           showConfirmButton: false
         }).then(() => {
-          // Após o alerta sumir, navegamos para o dashboard de teste
+          localStorage.setItem('usuarioId', dados.usuario.id);
+          localStorage.setItem('usuarioNome', dados.usuario.nome);
           navigate('/dashboard');
         });
       } else if (resposta.status === 403) {

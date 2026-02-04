@@ -5,7 +5,8 @@ import {
     loginUsuario,
     reenviarCodigo,
     solicitarRecuperacao,
-    redefinirSenha
+    redefinirSenha,
+    buscarPerfilPorId
 } from '../controllers/usuarioController.js';
 
 const router = express.Router();

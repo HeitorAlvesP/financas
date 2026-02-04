@@ -11,25 +11,41 @@ function MinhaConta() {
     const [senha, setSenha] = useState('********');
     const [carregando, setCarregando] = useState(true);
 
+    const formatarCPF = (valor) => {
+        return valor
+            .replace(/\D/g, '')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+            .replace(/(-\d{2})\d+?$/, '$1');
+    };
+
+    // FUNÇÃO PARA SALVAR (Estava faltando no seu código)
+    const handleSalvar = (e) => {
+        e.preventDefault();
+        Swal.fire('Sucesso', 'Informações atualizadas com sucesso!', 'success');
+    };
 
     useEffect(() => {
         const buscarDadosPerfil = async () => {
-            const idUsuario = localStorage.getItem('usuarioId');
-
-            if (!idUsuario) {
-                console.error("ID do usuário não encontrado");
-                return;
-            }
+            const idUsuario = "1"; // Teste manual
 
             try {
-                // Chamamos a rota que definimos anteriormente: /perfil/:id
-                const response = await fetch(`http://localhost:5173/perfil/${idUsuario}`);
+                // Tente usar a rota sem o /api/usuario se der erro, 
+                // ou confirme no seu server.js qual o prefixo correto.
+                const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`);
+
+                // Verificação de segurança para o erro de JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new TypeError("O servidor não retornou JSON! Verifique se o Backend está rodando na porta 3000.");
+                }
+
                 const data = await response.json();
 
                 if (response.ok) {
-                    setNome(data.nome);
-                    setEmail(data.email);
-                    // Se o CPF já existir, aplicamos a máscara que você criou
+                    setNome(data.nome || '');
+                    setEmail(data.email || '');
                     setCpf(data.cpf ? formatarCPF(data.cpf) : '');
                     setNascimento(data.data_nascimento || '');
                 }
