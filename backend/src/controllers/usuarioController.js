@@ -259,3 +259,40 @@ export const atualizarPerfil = async (db, req, res) => {
     }
 };
 /*       ###         */
+
+
+
+/*   ALTERAR SENHA   */
+export const alterarSenha = async (db, req, res) => {
+    const { id } = req.params;
+    const { senhaAtual, novaSenha } = req.body;
+
+    try {
+        const usuario = await db.get(`SELECT senha FROM tb_usuario WHERE id_usuario = ?`, [id]);
+
+        if (!usuario) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+
+        const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha);
+
+        if (!senhaValida) {
+            return res.status(401).json({ erro: "A senha atual informada está incorreta." });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const novaSenhaCriptografada = await bcrypt.hash(novaSenha, salt);
+
+        await db.run(
+            `UPDATE tb_usuario SET senha = ? WHERE id_usuario = ?`,
+            [novaSenhaCriptografada, id]
+        );
+
+        return res.status(200).json({ mensagem: "Senha alterada com sucesso!" });
+
+    } catch (error) {
+        console.error("Erro ao alterar senha:", error);
+        return res.status(500).json({ erro: "Erro interno ao processar a troca de senha." });
+    }
+};
+/*       ###         */

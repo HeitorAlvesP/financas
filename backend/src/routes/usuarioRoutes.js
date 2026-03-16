@@ -8,6 +8,7 @@ import {
     redefinirSenha,
     buscarPerfilPorId,
     atualizarPerfil,
+    alterarSenha,
 } from '../controllers/usuarioController.js';
 
 const router = express.Router();
@@ -27,6 +28,7 @@ export default function (db) {
     router.post('/redefinir-senha', (req, res) => redefinirSenha(db, req, res));
     router.get('/perfil/:id', (req, res) => buscarPerfilPorId(db, req, res));
     router.put('/perfil/:id', (req, res) => atualizarPerfil(db, req, res));    
+    router.put('/perfil/alterar-senha/:id', (req, res) => alterarSenha(db, req, res));
 
     return router;
 }
