@@ -21,9 +21,32 @@ function MinhaConta() {
     };
 
     // FUNÇÃO PARA SALVAR (Estava faltando no seu código)
-    const handleSalvar = (e) => {
+    const handleSalvar = async (e) => {
         e.preventDefault();
-        Swal.fire('Sucesso', 'Informações atualizadas com sucesso!', 'success');
+
+        const idUsuario = localStorage.getItem('usuarioId') || "1";
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: nome,
+                    cpf: cpf,
+                    data_nascimento: nascimento 
+                }),
+            });
+
+            if (response.ok) {
+                Swal.fire('Sucesso', 'Dados salvos no banco de dados!', 'success');
+            } else {
+                Swal.fire('Erro', 'O servidor recusou a atualização.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Erro', 'Não foi possível conectar ao servidor.', 'error');
+        }
     };
 
     useEffect(() => {
@@ -31,8 +54,6 @@ function MinhaConta() {
             const idUsuario = "1"; // Teste manual
 
             try {
-                // Tente usar a rota sem o /api/usuario se der erro, 
-                // ou confirme no seu server.js qual o prefixo correto.
                 const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`);
 
                 // Verificação de segurança para o erro de JSON
@@ -97,7 +118,6 @@ function MinhaConta() {
                         />
                     </div>
 
-                    {/* Linha Dupla: CPF e Nascimento - FORÇANDO LADO A LADO */}
                     <div style={linhaDuplaStyle}>
 
                         <div style={colunaMeioStyle}>

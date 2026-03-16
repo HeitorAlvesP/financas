@@ -6,7 +6,8 @@ import {
     reenviarCodigo,
     solicitarRecuperacao,
     redefinirSenha,
-    buscarPerfilPorId
+    buscarPerfilPorId,
+    atualizarPerfil,
 } from '../controllers/usuarioController.js';
 
 const router = express.Router();
@@ -25,6 +26,7 @@ export default function (db) {
     router.post('/solicitar-recuperacao', (req, res) => solicitarRecuperacao(db, req, res));
     router.post('/redefinir-senha', (req, res) => redefinirSenha(db, req, res));
     router.get('/perfil/:id', (req, res) => buscarPerfilPorId(db, req, res));
+    router.put('/perfil/:id', (req, res) => atualizarPerfil(db, req, res));    
 
     return router;
 }

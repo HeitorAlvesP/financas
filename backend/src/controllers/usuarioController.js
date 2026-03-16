@@ -234,3 +234,28 @@ export const buscarPerfilPorId = async (db, req, res) => {
     }
 };
 /*       ###         */
+
+
+
+/*  ATUALIZAR DADOS  */
+export const atualizarPerfil = async (db, req, res) => {
+    const { id } = req.params; 
+    const { nome, cpf, data_nascimento } = req.body;
+    
+    const cpf_limpo = cpf.replace(/\D/g, '');
+
+    try {
+        await db.run(
+            `UPDATE tb_usuario 
+             SET nome = ?, cpf = ?, data_nascimento = ?, us_completo = 1 
+             WHERE id_usuario = ?`,
+            [nome, cpf_limpo, data_nascimento, id]
+        );
+
+        return res.status(200).json({ mensagem: "Perfil atualizado com sucesso!" });
+    } catch (error) {
+        console.error("Erro ao atualizar perfil:", error);
+        return res.status(500).json({ erro: "Erro ao salvar no banco." });
+    }
+};
+/*       ###         */
