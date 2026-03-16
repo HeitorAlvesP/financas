@@ -154,7 +154,12 @@ function MinhaConta() {
                     {/* E-mail */}
                     <div style={fieldGroup}>
                         <label style={labelStyle}>E-mail (Não editável)</label>
-                        <input type="email" value={email} readOnly style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} />
+                        <input 
+                            type="email" 
+                            value={email} 
+                            readOnly 
+                            style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} 
+                        />
                     </div>
 
                     {/* Senha */}
@@ -166,9 +171,7 @@ function MinhaConta() {
                                 type="password"
                                 value={senha}
                                 readOnly
-                                style={inputStyle}
-                                onFocus={(e) => e.target.style.border = '1px solid var(--neon-green)'}
-                                onBlur={(e) => e.target.style.border = '1px solid var(--border-color)'}
+                                style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }}
                             />
                             <button type="button" style={alterarSenhaBtn}>Alterar</button>
                         </div>
