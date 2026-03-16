@@ -13,8 +13,10 @@ function MinhaConta() {
     // Estados para o Modal de Senha
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [senhaAtual, setSenhaAtual] = useState('');
-    const [novaSenha, setNovaSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
+    const [novaSenha, setNovaSenha] = useState('');
+    const isSenhaValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(novaSenha);
+
 
     const formatarCPF = (valor) => {
         return valor
@@ -144,14 +146,23 @@ function MinhaConta() {
                         <label style={labelStyle}>Senha</label>
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <input type="password" value={senha} readOnly style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} />
-                            {/* ADICIONADO ONCLICK ABAIXO */}
                             <button type="button" onClick={() => setIsModalOpen(true)} style={alterarSenhaBtn}>Alterar</button>
                         </div>
                     </div>
 
-                    <button type="submit" style={saveButtonStyle}>
+                    <button
+                        type="submit" style={saveButtonStyle}
+                        onMouseEnter={(e) => {
+                            e.target.style.transform = 'scale(1.02)';
+                            e.target.style.boxShadow = '0 0 25px var(--neon-green)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.transform = 'scale(1)';
+                            e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
+                        }}>
                         ATUALIZAR MEUS DADOS
                     </button>
+
                 </form>
             </motion.div>
 
@@ -170,16 +181,60 @@ function MinhaConta() {
                                     <label style={labelStyle}>Senha Atual</label>
                                     <input type="password" value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} style={inputStyle} required />
                                 </div>
+
                                 <div style={fieldGroup}>
                                     <label style={labelStyle}>Nova Senha</label>
-                                    <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} style={inputStyle} required />
+                                    <input
+                                        type="password"
+                                        value={novaSenha}
+                                        onChange={(e) => setNovaSenha(e.target.value)}
+                                        style={inputStyle}
+                                        required
+                                    />
+                                    <p style={{
+                                        fontSize: '0.75rem',
+                                        marginTop: '5px',
+                                        transition: 'color 0.3s ease',
+                                        color: novaSenha.length > 0
+                                            ? (isSenhaValida ? 'var(--neon-green)' : '#ff4444')
+                                            : 'var(--text-gray)'
+                                    }}>
+                                        {isSenhaValida
+                                            ? '✔ Senha forte o suficiente'
+                                            : 'Mínimo 8 caracteres, maiúsculas, números e símbolos.'
+                                        }
+                                    </p>
                                 </div>
+
                                 <div style={fieldGroup}>
                                     <label style={labelStyle}>Confirmar Nova Senha</label>
-                                    <input type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} style={inputStyle} required />
+                                    <input
+                                        type="password"
+                                        value={confirmarSenha}
+                                        onChange={(e) => setConfirmarSenha(e.target.value)}
+                                        style={inputStyle} required />
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                    <button type="submit" style={saveButtonStyle}>CONFIRMAR</button>
+                                    {/* <button
+                                        type="submit"
+                                        style={saveButtonStyle}>
+                                        CONFIRMAR
+                                    </button> */}
+
+                                    <button
+                                        type="submit" style={saveButtonStyle}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = 'scale(1.02)';
+                                            e.target.style.boxShadow = '0 0 25px var(--neon-green)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = 'scale(1)';
+                                            e.target.style.boxShadow = '0 0 15px var(--neon-glow)';
+                                        }}>
+                                        CONFIRMAR
+                                    </button>
+
+
                                     <button type="button" onClick={() => setIsModalOpen(false)} style={cancelButtonStyle}>CANCELAR</button>
                                 </div>
                             </form>
@@ -196,18 +251,18 @@ const paginaCentralizadaStyle = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%', // Ocupa toda a altura do MainLayout
+    height: '100%',
     width: '100%',
     boxSizing: 'border-box'
 };
 
 const cardContainerStyle = {
     backgroundColor: 'var(--bg-card)',
-    padding: '50px', // Aumentei o respiro interno
+    padding: '50px',
     borderRadius: '16px',
     border: '1px solid var(--border-color)',
-    width: '90%',      // Ocupa 90% da largura disponível...
-    maxWidth: '900px', // ...até o limite de 900px (mais imponente)
+    width: '90%',
+    maxWidth: '900px',
     boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
     boxSizing: 'border-box'
 };
@@ -215,9 +270,9 @@ const cardContainerStyle = {
 
 const linhaDuplaStyle = {
     display: 'flex',
-    flexDirection: 'row', // Garante o alinhamento horizontal
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: '30px',          // Espaço generoso entre os campos
+    gap: '30px',
     width: '100%',
     marginBottom: '20px'
 };
@@ -225,7 +280,7 @@ const linhaDuplaStyle = {
 const colunaMeioStyle = {
     display: 'flex',
     flexDirection: 'column',
-    width: 'calc(50% - 15px)' // Garante exatamente metade menos metade do gap
+    width: 'calc(50% - 15px)'
 };
 
 const containerStyle = {
@@ -315,6 +370,14 @@ const cancelButtonStyle = {
     borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold'
+};
+
+const helpTextStyle = {
+    fontSize: '0.75rem',
+    color: 'var(--text-gray)',
+    marginTop: '5px',
+    opacity: 0.8,
+    lineHeight: '1.2'
 };
 
 export default MinhaConta;

@@ -97,7 +97,7 @@ export const loginUsuario = async (db, req, res) => {
         if (!usuario) {
             return res.status(401).json({ erro: "E-mail ou senha incorretos." });
         }
-        
+
         if (usuario.email_confirmado !== 1) {
             return res.status(403).json({ erro: "Por favor, confirme seu e-mail antes de logar." });
         }
@@ -105,12 +105,12 @@ export const loginUsuario = async (db, req, res) => {
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
         if (senhaCorreta) {
-            return res.status(200).json({ 
+            return res.status(200).json({
                 mensagem: "Login realizado com sucesso!",
-                usuario: { 
+                usuario: {
                     id: usuario.id_usuario,
-                    nome: usuario.nome, 
-                    email: usuario.email 
+                    nome: usuario.nome,
+                    email: usuario.email
                 }
             });
         } else {
@@ -227,7 +227,7 @@ export const buscarPerfilPorId = async (db, req, res) => {
 
         // Retornamos o objeto com os dados para o Frontend
         return res.status(200).json(usuario);
-        
+
     } catch (error) {
         console.error("Erro ao buscar perfil:", error);
         return res.status(500).json({ erro: "Erro interno no servidor ao buscar perfil." });
@@ -239,9 +239,9 @@ export const buscarPerfilPorId = async (db, req, res) => {
 
 /*  ATUALIZAR DADOS  */
 export const atualizarPerfil = async (db, req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params;
     const { nome, cpf, data_nascimento } = req.body;
-    
+
     const cpf_limpo = cpf.replace(/\D/g, '');
 
     try {
@@ -266,6 +266,14 @@ export const atualizarPerfil = async (db, req, res) => {
 export const alterarSenha = async (db, req, res) => {
     const { id } = req.params;
     const { senhaAtual, novaSenha } = req.body;
+
+    const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    
+    if (!regexSenha.test(novaSenha)) {
+        return res.status(400).json({
+            erro: "A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."
+        });
+    }
 
     try {
         const usuario = await db.get(`SELECT senha FROM tb_usuario WHERE id_usuario = ?`, [id]);
