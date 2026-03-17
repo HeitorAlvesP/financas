@@ -29,7 +29,7 @@ function MinhaConta() {
 
     const handleSalvar = async (e) => {
         e.preventDefault();
-        const idUsuario = localStorage.getItem('usuarioId') || "1";
+        const idUsuario = localStorage.getItem('usuarioId');
         try {
             const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`, {
                 method: 'PUT',
@@ -49,7 +49,7 @@ function MinhaConta() {
 
     useEffect(() => {
         const buscarDadosPerfil = async () => {
-            const idUsuario = localStorage.getItem('usuarioId') || "1";
+            const idUsuario = localStorage.getItem('usuarioId');
             try {
                 const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`);
                 const contentType = response.headers.get("content-type");
@@ -77,7 +77,7 @@ function MinhaConta() {
         if (novaSenha !== confirmarSenha) {
             return Swal.fire('Erro', 'As novas senhas não coincidem.', 'error');
         }
-        const idUsuario = localStorage.getItem('usuarioId') || "1";
+        const idUsuario = localStorage.getItem('usuarioId');
         try {
             const response = await fetch(`http://localhost:3000/api/usuarios/perfil/alterar-senha/${idUsuario}`, {
                 method: 'PUT',

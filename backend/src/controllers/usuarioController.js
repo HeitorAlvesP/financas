@@ -1,6 +1,7 @@
 /*  #IMPORTACOES    */
 import bcrypt from 'bcrypt'
 import { enviarCodigoVerificacao } from '../services/emailService.js';
+import jwt from 'jsonwebtoken';
 
 
 
@@ -105,8 +106,15 @@ export const loginUsuario = async (db, req, res) => {
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
         if (senhaCorreta) {
+            const token = jwt.sign(
+                { id: usuario.id_usuario, email: usuario.email },
+                process.env.JWT_SECRET,
+                { expiresIn: '8h' }
+            );
+
             return res.status(200).json({
                 mensagem: "Login realizado com sucesso!",
+                token: token,
                 usuario: {
                     id: usuario.id_usuario,
                     nome: usuario.nome,
@@ -268,7 +276,7 @@ export const alterarSenha = async (db, req, res) => {
     const { senhaAtual, novaSenha } = req.body;
 
     const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    
+
     if (!regexSenha.test(novaSenha)) {
         return res.status(400).json({
             erro: "A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."

@@ -7,6 +7,7 @@ import usuarioRoutes from './routes/usuarioRoutes.js';
 
 const app = express();
 const port = env.PORT || 3000; 
+const secret = process.env.JWT_SECRET;
 
 app.use(cors()); 
 app.use(express.json());
