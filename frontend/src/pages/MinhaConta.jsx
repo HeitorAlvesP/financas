@@ -30,10 +30,14 @@ function MinhaConta() {
     const handleSalvar = async (e) => {
         e.preventDefault();
         const idUsuario = localStorage.getItem('usuarioId');
+        const token = localStorage.getItem('token');
         try {
             const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ nome, cpf, data_nascimento: nascimento }),
             });
 
@@ -50,13 +54,25 @@ function MinhaConta() {
     useEffect(() => {
         const buscarDadosPerfil = async () => {
             const idUsuario = localStorage.getItem('usuarioId');
+            const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`);
+
+                const response = await fetch(`http://localhost:3000/api/usuarios/perfil/${idUsuario}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
                 const contentType = response.headers.get("content-type");
+
                 if (!contentType || !contentType.includes("application/json")) {
                     throw new TypeError("O servidor não retornou JSON!");
                 }
+
                 const data = await response.json();
+
                 if (response.ok) {
                     setNome(data.nome || '');
                     setEmail(data.email || '');
@@ -77,13 +93,21 @@ function MinhaConta() {
         if (novaSenha !== confirmarSenha) {
             return Swal.fire('Erro', 'As novas senhas não coincidem.', 'error');
         }
+
         const idUsuario = localStorage.getItem('usuarioId');
+        const token = localStorage.getItem('token');
+
         try {
+
             const response = await fetch(`http://localhost:3000/api/usuarios/perfil/alterar-senha/${idUsuario}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
                 body: JSON.stringify({ senhaAtual, novaSenha })
             });
+
             const data = await response.json();
             if (response.ok) {
                 Swal.fire('Sucesso', 'Senha alterada com sucesso!', 'success');

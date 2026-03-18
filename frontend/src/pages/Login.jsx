@@ -28,6 +28,7 @@ function Login() {
           timer: 1500,
           showConfirmButton: false
         }).then(() => {
+          localStorage.setItem('token', dados.token);
           localStorage.setItem('usuarioId', dados.usuario.id);
           localStorage.setItem('usuarioNome', dados.usuario.nome);
           navigate('/dashboard');
