@@ -6,14 +6,14 @@ import AuthLayout from './components/AuthLayout';
 import LayoutPrivado from './components/LayoutPrivado';
 
 // Páginas Públicas
-import Login from './pages/Login';
-import Register from './pages/Register';
-import RecuperarSenha from './pages/RecuperarSenha';
-import ValidacaoPendente from './pages/ValidacaoPendente';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import RecuperarSenha from './pages/auth/RecuperarSenha';
+import ValidacaoPendente from './pages/auth/ValidacaoPendente';
 
 // Páginas Privadas
-import Dashboard from './pages/Dashboard';
-import MinhaConta from './pages/MinhaConta';
+import Dashboard from './pages/dashboard/Dashboard';
+import MinhaConta from './pages/perfil/MinhaConta';
 
 function App() {
   return (
