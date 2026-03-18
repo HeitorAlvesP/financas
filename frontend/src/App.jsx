@@ -14,6 +14,7 @@ import ValidacaoPendente from './pages/auth/ValidacaoPendente';
 // Páginas Privadas
 import Dashboard from './pages/dashboard/Dashboard';
 import MinhaConta from './pages/perfil/MinhaConta';
+import Cartoes from './pages/cartoes/Cartoes';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/categorias" element={<Dashboard />} />
             <Route path="/configuracoes" element={<Dashboard />} />
             <Route path="/perfil" element={<MinhaConta />} />
+            <Route path="/cartoes" element={<Cartoes />} />
           </Route>
         </Route>
 
