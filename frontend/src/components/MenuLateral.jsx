@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 function MenuLateral() {
     const navigate = useNavigate();
 
+    const handleSair = () => {
+        localStorage.clear();
+        window.location.href = '/login';
+    };
+
     const itensMenu = [
         { nome: 'Resumo', rota: '/dashboard' },
         { nome: 'Transações', rota: '/transacoes' },
@@ -53,7 +58,7 @@ function MenuLateral() {
 
                 {/* Botão Sair que você já tem */}
                 <button
-                    onClick={() => navigate('/login')}
+                    onClick={handleSair}
                     style={sairButtonStyle}
                     onMouseEnter={(e) => {
                         e.target.style.borderColor = 'red'; // Vermelho vibrante no hover

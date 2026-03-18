@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Layouts
 import AuthLayout from './components/AuthLayout';
@@ -19,7 +20,7 @@ function App() {
     <Router>
       <Routes>
 
-        {/* --- ROTAS PÚBLICAS (Com a ilustração e fundo radial) --- */}
+        {/* --- ROTAS PÚBLICAS (Acesso Livre) --- */}
         <Route element={<AuthLayout />}>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
@@ -28,17 +29,20 @@ function App() {
           <Route path="/validacao-pendente" element={<ValidacaoPendente />} />
         </Route>
 
-        {/* --- ROTAS PRIVADAS (Com Menu Lateral e Fundo Escuro) --- */}
-        <Route element={<LayoutPrivado />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/transacoes" element={<Dashboard />} />
-          <Route path="/categorias" element={<Dashboard />} />
-          <Route path="/configuracoes" element={<Dashboard />} />
-          <Route path="/perfil" element={<MinhaConta />} />
+        {/* --- ROTAS PRIVADAS (PROTEGIDAS) --- */}
+        {/* Envolvemos o LayoutPrivado dentro do ProtectedRoute */}
+        <Route element={<ProtectedRoute />}> 
+          <Route element={<LayoutPrivado />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/transacoes" element={<Dashboard />} />
+            <Route path="/categorias" element={<Dashboard />} />
+            <Route path="/configuracoes" element={<Dashboard />} />
+            <Route path="/perfil" element={<MinhaConta />} />
+          </Route>
         </Route>
 
-        {/* Rota de fallback para 404 - Opcional */}
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
