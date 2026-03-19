@@ -12,6 +12,10 @@ import {
     alterarSenha,
 } from '../controllers/usuarioController.js';
 
+import {
+    cadastrarCartao
+} from '../controllers/CartaoController.js'
+
 const router = express.Router();
 
 export default function (db) {
@@ -31,8 +35,11 @@ export default function (db) {
     // Todas as rotas colocadas abaixo nescessitam de um token de validação para serem acessadas
     router.put('/perfil/:id', verificarToken,                  (req, res) => atualizarPerfil(db, req, res));    
     router.put('/perfil/alterar-senha/:id',verificarToken,     (req, res) => alterarSenha(db, req, res));
-    
+
     router.get('/perfil/:id',verificarToken,                   (req, res) => buscarPerfilPorId(db, req, res));
+
+    //Rotas do cartão
+    router.post('/cartoes', verificarToken, (req, res) => cadastrarCartao(db, req, res));
 
     return router;
 }

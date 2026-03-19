@@ -1,24 +1,43 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
+import { handleSalvarCartao } from './js/handleSalvarCartao';
+
 function Cartoes() {
+    // --- ESTADOS DA TELA E PAGINAÇÃO ---
     const [busca, setBusca] = useState('');
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [telaAtual, setTelaAtual] = useState('lista');
 
-    // Array fake ajustado para EXATAMENTE 4 itens, evitando scroll
-    const cartoesFake = [1, 2, 3, 4, 5, 6 , 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+    // --- ESTADOS DO FORMULÁRIO DE CADASTRO ---
+    const [nome, setNome] = useState('');
+    const [nomeResponsavel, setNomeResponsavel] = useState('');
+    const [numeroCartao, setNumeroCartao] = useState('');
+    const [tipoCartao, setTipoCartao] = useState('C'); // 'C' como padrão (Crédito)
+    const [limite, setLimite] = useState('');
 
-    //Número de cartões por página
+    const cartoesFake = [1, 2, 3, 4, 5, 6, 7, 8];
     const itensPorPagina = 5;
-
-    // Calcula quem deve aparecer na tela agora
     const indexUltimoCartao = paginaAtual * itensPorPagina;
     const indexPrimeiroCartao = indexUltimoCartao - itensPorPagina;
     const cartoesAtuais = cartoesFake.slice(indexPrimeiroCartao, indexUltimoCartao);
-
     const totalPaginas = Math.ceil(cartoesFake.length / itensPorPagina);
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
+
+    const executarSalvamento = async () => {
+        const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite);
+
+        if (sucesso) {
+            setNome('');
+            setNomeResponsavel('');
+            setNumeroCartao('');
+            setTipoCartao('C');
+            setLimite('');
+            setTelaAtual('lista');
+        }
+    };
+
+    // --- FUNÇÃO PARA SALVAR NO BANCO ---
 
     return (
         <div style={paginaPrincipalStyle}>
@@ -100,7 +119,7 @@ function Cartoes() {
                                     <div style={iconeFakeStyle}>💳</div>
                                     <div>
                                         <h3 style={nomeCartaoStyle}>Cartão de Crédito {item}</h3>
-                                        <p style={detalheCartaoStyle}>Nubank • Final 1234</p>
+                                        <p style={detalheCartaoStyle}>Nubank • Início 1234</p>
                                     </div>
                                 </div>
                                 <div style={acaoCartaoStyle}>
@@ -113,18 +132,18 @@ function Cartoes() {
                     {/* Paginação */}
                     {totalPaginas > 1 && (
                         <motion.div style={paginacaoContainerStyle}>
-                            <button 
+                            <button
                                 style={btnPaginacaoSetaStyle}
                                 onClick={() => setPaginaAtual(paginaAtual - 1)}
                                 disabled={paginaAtual === 1}
                             >
                                 &laquo; Anterior
                             </button>
-                            
+
                             <div style={paginasNumerosContainerStyle}>
                                 {/* Gera os botões de números automaticamente */}
                                 {numerosPaginas.map(numero => (
-                                    <button 
+                                    <button
                                         key={numero}
                                         style={paginaAtual === numero ? btnPaginaAtivaStyle : btnPaginaInativaStyle}
                                         onClick={() => setPaginaAtual(numero)}
@@ -134,7 +153,7 @@ function Cartoes() {
                                 ))}
                             </div>
 
-                            <button 
+                            <button
                                 style={btnPaginacaoSetaStyle}
                                 onClick={() => setPaginaAtual(paginaAtual + 1)}
                                 disabled={paginaAtual === totalPaginas}
@@ -156,14 +175,14 @@ function Cartoes() {
 
                     <form style={gridFormularioStyle}>
                         {/* Linha 1 */}
-
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Nome do Cartão (Ex: Nubank)</label>
                             <input
                                 type="text"
                                 style={inputFormStyle}
                                 placeholder="Digite o nome..."
-                                onChange={(e) => setBusca(e.target.value)}
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
@@ -175,20 +194,23 @@ function Cartoes() {
                                 type="text"
                                 style={inputFormStyle}
                                 placeholder="Como está no cartão..."
-                                onChange={(e) => setBusca(e.target.value)}
+                                value={nomeResponsavel}
+                                onChange={(e) => setNomeResponsavel(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
                         </div>
 
+                        {/* Linha 2 */}
                         <div style={grupoInputStyle}>
-                            <label style={labelStyle}>Final do Cartão (4 dígitos)</label>
+                            <label style={labelStyle}>Primeiros 4 dígitos</label>
                             <input
                                 type="text"
                                 style={inputFormStyle}
                                 maxLength="4"
-                                placeholder="Ex: 1234"
-                                onChange={(e) => setBusca(e.target.value)}
+                                placeholder="Ex: 5502"
+                                value={numeroCartao}
+                                onChange={(e) => setNumeroCartao(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
@@ -196,8 +218,10 @@ function Cartoes() {
 
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Tipo de Cartão</label>
-                            <select style={inputFormStyle}
-                                onChange={(e) => setBusca(e.target.value)}
+                            <select
+                                style={inputFormStyle}
+                                value={tipoCartao}
+                                onChange={(e) => setTipoCartao(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             >
@@ -214,7 +238,8 @@ function Cartoes() {
                                 type="text"
                                 style={inputFormStyle}
                                 placeholder="Ex: 5000,00"
-                                onChange={(e) => setBusca(e.target.value)}
+                                value={limite}
+                                onChange={(e) => setLimite(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
@@ -225,6 +250,7 @@ function Cartoes() {
                             <button
                                 type="button"
                                 style={botaoSalvarStyle}
+                                onClick={executarSalvamento} // CHAMA A FUNÇÃO AQUI!
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)';
@@ -238,6 +264,7 @@ function Cartoes() {
                             </button>
                         </div>
                     </form>
+
                 </motion.div>
             )}
         </div>
