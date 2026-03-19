@@ -3,12 +3,22 @@ import { motion } from 'framer-motion';
 
 function Cartoes() {
     const [busca, setBusca] = useState('');
-
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [telaAtual, setTelaAtual] = useState('lista');
 
     // Array fake ajustado para EXATAMENTE 4 itens, evitando scroll
-    const cartoesFake = [1, 2, 3, 4, 5];
+    const cartoesFake = [1, 2, 3, 4, 5, 6 , 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+    //Número de cartões por página
+    const itensPorPagina = 5;
+
+    // Calcula quem deve aparecer na tela agora
+    const indexUltimoCartao = paginaAtual * itensPorPagina;
+    const indexPrimeiroCartao = indexUltimoCartao - itensPorPagina;
+    const cartoesAtuais = cartoesFake.slice(indexPrimeiroCartao, indexUltimoCartao);
+
+    const totalPaginas = Math.ceil(cartoesFake.length / itensPorPagina);
+    const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
     return (
         <div style={paginaPrincipalStyle}>
@@ -69,12 +79,13 @@ function Cartoes() {
                 // --- TELA DE LISTAGEM ---
                 <>
                     <div style={listaContainerStyle}>
-                        {cartoesFake.map((item, index) => (
+                        {/* AQUI: Usamos cartoesAtuais em vez de cartoesFake */}
+                        {cartoesAtuais.map((item, index) => (
                             <motion.div
                                 key={item}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.3 + (index * 0.1) }}
+                                transition={{ duration: 0.40, delay: 0.1 + (index * 0.1) }}
                                 style={itemCartaoStyle}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.borderColor = 'var(--neon-green)';
@@ -100,14 +111,38 @@ function Cartoes() {
                     </div>
 
                     {/* Paginação */}
-                    <motion.div style={paginacaoContainerStyle}>
-                        <button style={btnPaginacaoSetaStyle}>&laquo; Anterior</button>
-                        <div style={paginasNumerosContainerStyle}>
-                            <button style={btnPaginaAtivaStyle}>1</button>
-                            <button style={btnPaginaInativaStyle}>2</button>
-                        </div>
-                        <button style={btnPaginacaoSetaStyle}>Próxima &raquo;</button>
-                    </motion.div>
+                    {totalPaginas > 1 && (
+                        <motion.div style={paginacaoContainerStyle}>
+                            <button 
+                                style={btnPaginacaoSetaStyle}
+                                onClick={() => setPaginaAtual(paginaAtual - 1)}
+                                disabled={paginaAtual === 1}
+                            >
+                                &laquo; Anterior
+                            </button>
+                            
+                            <div style={paginasNumerosContainerStyle}>
+                                {/* Gera os botões de números automaticamente */}
+                                {numerosPaginas.map(numero => (
+                                    <button 
+                                        key={numero}
+                                        style={paginaAtual === numero ? btnPaginaAtivaStyle : btnPaginaInativaStyle}
+                                        onClick={() => setPaginaAtual(numero)}
+                                    >
+                                        {numero}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button 
+                                style={btnPaginacaoSetaStyle}
+                                onClick={() => setPaginaAtual(paginaAtual + 1)}
+                                disabled={paginaAtual === totalPaginas}
+                            >
+                                Próxima &raquo;
+                            </button>
+                        </motion.div>
+                    )}
                 </>
             ) : (
                 // --- TELA DE CADASTRO (Novo layout) ---
@@ -121,23 +156,51 @@ function Cartoes() {
 
                     <form style={gridFormularioStyle}>
                         {/* Linha 1 */}
+
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Nome do Cartão (Ex: Nubank)</label>
-                            <input type="text" style={inputFormStyle} placeholder="Digite o nome..." />
-                        </div>
-                        <div style={grupoInputStyle}>
-                            <label style={labelStyle}>Nome do Titular</label>
-                            <input type="text" style={inputFormStyle} placeholder="Como está no cartão..." />
+                            <input
+                                type="text"
+                                style={inputFormStyle}
+                                placeholder="Digite o nome..."
+                                onChange={(e) => setBusca(e.target.value)}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                            />
                         </div>
 
-                        {/* Linha 2 */}
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Nome do Titular</label>
+                            <input
+                                type="text"
+                                style={inputFormStyle}
+                                placeholder="Como está no cartão..."
+                                onChange={(e) => setBusca(e.target.value)}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                            />
+                        </div>
+
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Final do Cartão (4 dígitos)</label>
-                            <input type="text" style={inputFormStyle} maxLength="4" placeholder="Ex: 1234" />
+                            <input
+                                type="text"
+                                style={inputFormStyle}
+                                maxLength="4"
+                                placeholder="Ex: 1234"
+                                onChange={(e) => setBusca(e.target.value)}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                            />
                         </div>
+
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Tipo de Cartão</label>
-                            <select style={inputFormStyle}>
+                            <select style={inputFormStyle}
+                                onChange={(e) => setBusca(e.target.value)}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                            >
                                 <option value="C">Crédito</option>
                                 <option value="D">Débito</option>
                                 <option value="V">Vale Alimentação/Refeição</option>
@@ -147,7 +210,14 @@ function Cartoes() {
                         {/* Linha 3 */}
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Limite (R$)</label>
-                            <input type="text" style={inputFormStyle} placeholder="Ex: 5000,00" />
+                            <input
+                                type="text"
+                                style={inputFormStyle}
+                                placeholder="Ex: 5000,00"
+                                onChange={(e) => setBusca(e.target.value)}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                            />
                         </div>
 
                         {/* Botão de Salvar */}
@@ -157,7 +227,7 @@ function Cartoes() {
                                 style={botaoSalvarStyle}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
-                                    e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)'; 
+                                    e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)';
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.transform = 'scale(1)';
@@ -212,7 +282,7 @@ const linhaAcoesStyle = {
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginBottom: '20px' 
+    marginBottom: '20px'
 };
 
 // ESTILO DO BOTÃO "NOVO CARTÃO"
