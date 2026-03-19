@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { handleSalvarCartao } from './js/handleSalvarCartao';
+import { formatarMoeda } from './js/mascara_moeda';
 
 function Cartoes() {
     // --- ESTADOS DA TELA E PAGINAÇÃO ---
@@ -208,7 +209,7 @@ function Cartoes() {
                                 type="text"
                                 style={inputFormStyle}
                                 maxLength="4"
-                                placeholder="Ex: 5502"
+                                placeholder="Ex: 0000"
                                 value={numeroCartao}
                                 onChange={(e) => setNumeroCartao(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
@@ -237,9 +238,9 @@ function Cartoes() {
                             <input
                                 type="text"
                                 style={inputFormStyle}
-                                placeholder="Ex: 5000,00"
+                                placeholder="Ex: R$ 5.000,00"
                                 value={limite}
-                                onChange={(e) => setLimite(e.target.value)}
+                                onChange={(e) => setLimite(formatarMoeda(e.target.value))} 
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
