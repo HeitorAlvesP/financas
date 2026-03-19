@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import {
+    backButtonStyle,
+    buttonStyle,
+    inputStyle,
+    labelStyle,
+} from './style/styleRecuperarSenha'
+
 function RecuperarSenha() {
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
@@ -162,11 +169,5 @@ function RecuperarSenha() {
         </div>
     );
 }
-
-// Estilos mantidos do seu padrão
-const labelStyle = { display: 'block', color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '5px', marginTop: '15px' };
-const inputStyle = { width: '100%', padding: '14px 16px', backgroundColor: 'var(--input-bg)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'white', outline: 'none', boxSizing: 'border-box', transition: 'all 0.3s ease' };
-const buttonStyle = { width: '100%', padding: '16px', marginTop: '20px', backgroundColor: 'var(--neon-green)', color: '#000', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 15px var(--neon-glow)', transition: 'all 0.3s ease' };
-const backButtonStyle = { width: '100%', marginTop: '15px', background: 'none', border: 'none', color: 'var(--text-gray)', cursor: 'pointer', textDecoration: 'underline' };
 
 export default RecuperarSenha;

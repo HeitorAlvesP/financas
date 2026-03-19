@@ -4,6 +4,39 @@ import { motion } from 'framer-motion';
 import { handleSalvarCartao } from './js/handleSalvarCartao';
 import { formatarMoeda } from './js/mascara_moeda';
 
+import {
+    acaoCartaoStyle,
+    botaoAcaoCianoStyle,
+    botaoSalvarStyle,
+    btnPaginaAtivaStyle,
+    btnPaginaInativaStyle,
+    btnPaginacaoSetaStyle,
+    containerBotaoSalvarStyle,
+    containerBuscaStyle,
+    detalheCartaoStyle,
+    formularioContainerStyle,
+    gridFormularioStyle,
+    grupoInputStyle,
+    headerStyle,
+    iconeFakeStyle,
+    infoCartaoStyle,
+    inputBuscaStyle,
+    inputFormStyle,
+    itemCartaoStyle,
+    labelStyle,
+    linhaAcoesStyle,
+    linhaDecorativaStyle,
+    listaContainerStyle,
+    nomeCartaoStyle,
+    paginaPrincipalStyle,
+    paginacaoContainerStyle,
+    paginasNumerosContainerStyle,
+    quadradoAcaoStyle,
+    tituloFormularioStyle,
+    tituloNeonStyle,
+} from './style/styleCartao';
+
+
 function Cartoes() {
     // --- ESTADOS DA TELA E PAGINAÇÃO ---
     const [busca, setBusca] = useState('');
@@ -14,7 +47,7 @@ function Cartoes() {
     const [nome, setNome] = useState('');
     const [nomeResponsavel, setNomeResponsavel] = useState('');
     const [numeroCartao, setNumeroCartao] = useState('');
-    const [tipoCartao, setTipoCartao] = useState('C'); // 'C' como padrão (Crédito)
+    const [tipoCartao, setTipoCartao] = useState('C');
     const [limite, setLimite] = useState('');
 
     const cartoesFake = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -25,6 +58,7 @@ function Cartoes() {
     const totalPaginas = Math.ceil(cartoesFake.length / itensPorPagina);
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
+    // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO
     const executarSalvamento = async () => {
         const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite);
 
@@ -38,7 +72,6 @@ function Cartoes() {
         }
     };
 
-    // --- FUNÇÃO PARA SALVAR NO BANCO ---
 
     return (
         <div style={paginaPrincipalStyle}>
@@ -238,7 +271,7 @@ function Cartoes() {
                             <input
                                 type="text"
                                 style={inputFormStyle}
-                                placeholder="Ex: R$ 5.000,00"
+                                placeholder="Ex: R$ 0.000,00"
                                 value={limite}
                                 onChange={(e) => setLimite(formatarMoeda(e.target.value))} 
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
@@ -271,276 +304,5 @@ function Cartoes() {
         </div>
     );
 }
-
-// --- ESTILOS ATUALIZADOS ---
-
-const paginaPrincipalStyle = {
-    padding: '15px 30px', // Respiro bem menor nas bordas
-    width: '100%',
-    height: '100%',       // Mudamos de 100vh para 100% para não vazar do LayoutPrivado
-    display: 'flex',
-    flexDirection: 'column',
-    boxSizing: 'border-box',
-    overflow: 'hidden'    // Bloqueio absoluto de rolagem
-};
-
-const headerStyle = {
-    marginBottom: '45px', // Muito mais colado ao topo
-    alignSelf: 'flex-start'
-};
-
-const tituloNeonStyle = {
-    color: 'var(--neon-green)',
-    fontSize: '2.5rem', // Título um pouco maior
-    margin: 0,
-    fontWeight: 'bold',
-    letterSpacing: '2px'
-};
-
-const linhaDecorativaStyle = {
-    height: '3px',
-    width: '80px',
-    backgroundColor: 'var(--neon-green)',
-    marginTop: '8px',
-    boxShadow: '0 0 15px var(--neon-glow)'
-};
-
-const linhaAcoesStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: '20px'
-};
-
-// ESTILO DO BOTÃO "NOVO CARTÃO"
-const botaoAcaoCianoStyle = {
-    backgroundColor: 'transparent',
-    color: '#00f3ff', // Texto Azul Ciano
-    border: '2px solid #00f3ff', // Borda Azul Ciano
-    padding: '14px 30px',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    transition: 'all 0.3s ease'
-};
-
-// ESTILO DO CAMPO DE BUSCA
-const containerBuscaStyle = {
-    width: '450px' // Aumentei de 350px para 450px para ter mais presença
-};
-
-const inputBuscaStyle = {
-    width: '100%',
-    backgroundColor: 'var(--input-bg)', // Usando o fundo de input padrão do sistema
-    border: '1px solid var(--border-color)',
-    borderRadius: '12px',
-    padding: '16px 20px',             // Mais alto e confortável
-    color: 'white',
-    fontSize: '1rem',
-    outline: 'none',
-    transition: 'all 0.3s ease',
-    boxSizing: 'border-box'
-};
-
-// --- ESTILOS DOS CARTÕES (Mais compactos) ---
-
-const listaContainerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px', // Espaço mínimo entre as linhas
-    width: '100%',
-    flex: 1 // Faz a lista ocupar o espaço disponível empurrando o resto para baixo
-};
-
-const itemCartaoStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '10px',
-    padding: '12px 20px', // Altura super fina
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-};
-
-const infoCartaoStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px' // Espaço entre o ícone e os textos
-};
-
-const iconeFakeStyle = {
-    fontSize: '2rem', // Tamanho do ícone
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: '15px',
-    borderRadius: '12px'
-};
-
-const nomeCartaoStyle = {
-    color: 'white',
-    margin: '0 0 5px 0',
-    fontSize: '1.2rem'
-};
-
-const detalheCartaoStyle = {
-    color: 'var(--text-gray)',
-    margin: 0,
-    fontSize: '0.9rem'
-};
-
-const acaoCartaoStyle = {
-    display: 'flex',
-    alignItems: 'center'
-};
-
-// O quadrado da direita do seu print
-const quadradoAcaoStyle = {
-    width: '45px',
-    height: '45px',
-    backgroundColor: 'transparent',
-    border: '1px solid var(--border-color)',
-    borderRadius: '8px',
-    color: 'white',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '1.2rem'
-};
-
-const paginacaoContainerStyle = {
-    display: 'flex',
-    justifyContent: 'center', // Centraliza a paginação no meio da tela
-    alignItems: 'center',
-    gap: '20px',
-    marginTop: 'auto', // O "auto" empurra a paginação para o limite inferior da tela
-    paddingTop: '20px'
-};
-
-const paginasNumerosContainerStyle = {
-    display: 'flex',
-    gap: '10px'
-};
-
-// Estilo para o botão "Anterior" e "Próxima"
-const btnPaginacaoSetaStyle = {
-    backgroundColor: 'transparent',
-    color: 'var(--text-gray)',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    transition: 'color 0.3s ease',
-    textTransform: 'uppercase'
-};
-
-// Estilo para o número da página atual (Destaque Azul Ciano)
-const btnPaginaAtivaStyle = {
-    backgroundColor: 'rgba(0, 243, 255, 0.1)', // Fundo com leve transparência
-    color: '#00f3ff',
-    border: '1px solid #00f3ff',
-    width: '35px',
-    height: '35px',
-    borderRadius: '8px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontWeight: 'bold',
-    cursor: 'default',
-    boxShadow: '0 0 10px rgba(0, 243, 255, 0.2)'
-};
-
-// Estilo para os números de páginas não selecionadas
-const btnPaginaInativaStyle = {
-    backgroundColor: 'transparent',
-    color: 'var(--text-gray)',
-    border: '1px solid var(--border-color)',
-    width: '35px',
-    height: '35px',
-    borderRadius: '8px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease'
-};
-
-const formularioContainerStyle = {
-    backgroundColor: 'var(--bg-card)',
-    padding: '30px',
-    borderRadius: '12px',
-    border: '1px solid var(--border-color)',
-    flex: 1, // Preenche o espaço que a lista ocupava
-    display: 'flex',
-    flexDirection: 'column'
-};
-
-const tituloFormularioStyle = {
-    color: 'white',
-    fontSize: '1.3rem',
-    marginBottom: '25px',
-    marginTop: 0,
-    borderBottom: '1px solid var(--border-color)',
-    paddingBottom: '15px'
-};
-
-const gridFormularioStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr', // Divide o form em 2 colunas
-    gap: '20px',
-    width: '100%'
-};
-
-const grupoInputStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px'
-};
-
-const labelStyle = {
-    color: 'var(--text-gray)',
-    fontSize: '0.9rem',
-    fontWeight: '500'
-};
-
-const inputFormStyle = {
-    width: '100%',
-    backgroundColor: 'var(--input-bg)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '8px',
-    padding: '12px 15px',
-    color: 'white',
-    fontSize: '0.95rem',
-    outline: 'none',
-    boxSizing: 'border-box'
-};
-
-// Botão de salvar pega a largura total (2 colunas)
-const containerBotaoSalvarStyle = {
-    gridColumn: '1 / -1',
-    display: 'flex',
-    justifyContent: 'flex-end', // Alinha o botão à direita
-    marginTop: '20px'
-};
-
-const botaoSalvarStyle = {
-    backgroundColor: 'var(--neon-green)',
-    color: 'black',
-    border: 'none',
-    padding: '12px 30px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '0.95rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    boxShadow: '0 0 15px var(--neon-glow)'
-};
 
 export default Cartoes;

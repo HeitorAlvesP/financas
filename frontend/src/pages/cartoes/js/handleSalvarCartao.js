@@ -1,16 +1,33 @@
+import Swal from 'sweetalert2';
+
 export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, tipoCartao, limite) => {
     // 1. Validação básica no Frontend
     if (!nome || !nomeResponsavel || !numeroCartao || !limite) {
-        alert("Por favor, preencha todos os campos do cartão.");
-        return;
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção!',
+            text: 'Por favor, preencha todos os campos do cartão.',
+            background: '#1e1e1e',
+            color: '#ffffff',
+            confirmButtonColor: '#4af6fff2', // Ciano
+            confirmButtonText: 'Entendi'
+        });
+        return false;
     }
 
     const token = localStorage.getItem('token');
     const usuarioId = localStorage.getItem('usuarioId');
 
     if (!token || !usuarioId) {
-        alert("Erro de autenticação. Por favor, faça login novamente.");
-        return;
+        Swal.fire({
+            icon: 'error',
+            title: 'Sessão Expirada',
+            text: 'Erro de autenticação. Por favor, faça login novamente.',
+            background: '#1e1e1e',
+            color: '#ffffff',
+            confirmButtonColor: '#ff003c' // Vermelho
+        });
+        return false;
     }
 
     // 3. Monta os dados para enviar
@@ -36,15 +53,38 @@ export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, ti
         const dadosResposta = await resposta.json();
 
         if (resposta.ok) {
-            alert("Sucesso: " + dadosResposta.mensagem);
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: dadosResposta.mensagem,
+                background: '#1e1e1e',
+                color: '#ffffff',
+                confirmButtonColor: '#39ff14', // Verde
+                confirmButtonText: 'Ótimo'
+            });
             return true; // Sucesso!
         } else {
-            alert("Erro: " + dadosResposta.erro);
+            Swal.fire({
+                icon: 'error',
+                title: 'Ops...',
+                text: dadosResposta.erro,
+                background: '#1e1e1e',
+                color: '#ffffff',
+                confirmButtonColor: '#ff003c'
+            });
             return false;
         }
 
     } catch (erro) {
         console.error("Erro na requisição:", erro);
-        alert("Erro ao conectar com o servidor.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Sem Conexão',
+            text: 'Erro ao tentar se comunicar com o servidor.',
+            background: '#1e1e1e',
+            color: '#ffffff',
+            confirmButtonColor: '#ff003c'
+        });
+        return false;
     }
 };

@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
+import {
+    buttonStyle,
+    inputGroupStyle,
+    inputStyle,
+    labelStyle,
+    linkButtonStyle,
+} from './style/styleLogin'
+
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -27,7 +35,6 @@ function Login() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        // Login com sucesso!
         Swal.fire({
           title: 'Bem-vindo!',
           text: dados.mensagem,
@@ -41,7 +48,6 @@ function Login() {
           navigate('/dashboard');
         });
       } else if (resposta.status === 403) {
-        // 1. Chamamos a rota de reenvio silenciosamente
         try {
           await fetch('http://localhost:3000/api/usuarios/reenviar-codigo', {
             method: 'POST',
@@ -49,21 +55,18 @@ function Login() {
             body: JSON.stringify({ email: email })
           });
 
-          // 2. Exibimos o alerta que você solicitou
           Swal.fire({
             title: 'E-mail não confirmado',
             text: 'Encaminhamos um novo código para seu e-mail.',
             icon: 'warning',
             confirmButtonColor: '#2e7d32'
           }).then(() => {
-            // 3. Leva para a página de validação pendente
             navigate('/validacao-pendente', { state: { email: email } });
           });
         } catch (err) {
           Swal.fire('Erro', 'Não foi possível reenviar o código.', 'error');
         }
       } else {
-        // Caso o e-mail não esteja confirmado, a senha esteja errada, etc.
         Swal.fire('Erro no acesso', dados.erro, 'error');
       }
     } catch (err) {
@@ -143,59 +146,4 @@ function Login() {
   );
 }
 
-// Estilos mantidos para consistência visual
-const inputGroupStyle = {
-  marginBottom: '20px',
-  textAlign: 'left'
-};
-
-const labelStyle = {
-  display: 'block',
-  color: 'var(--text-gray)',
-  fontSize: '0.9rem',
-  marginBottom: '8px'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '14px 16px',
-  backgroundColor: 'var(--input-bg)',
-  border: '1px solid var(--border-color)',
-  borderRadius: '12px',
-  color: 'white',
-  fontSize: '1rem',
-  outline: 'none',
-  boxSizing: 'border-box',
-  transition: 'all 0.3s ease'
-};
-
-const buttonStyle = {
-  width: '100%',
-  padding: '16px',
-  marginTop: '20px',
-  backgroundColor: 'var(--neon-green)',
-  color: '#000',
-  border: 'none',
-  borderRadius: '12px',
-  fontWeight: 'bold',
-  fontSize: '1rem',
-  cursor: 'pointer',
-  textTransform: 'uppercase',
-  letterSpacing: '1px',
-  boxShadow: '0 0 15px var(--neon-glow)',
-  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-};
-
-const linkButtonStyle = {
-  background: 'none',
-  border: 'none',
-  color: 'var(--text-gray)',
-  marginTop: '15px',
-  cursor: 'pointer',
-  fontSize: '0.9rem',
-  textDecoration: 'none',
-  display: 'block',
-  width: '100%',
-  transition: 'color 0.3s'
-};
 export default Login;
