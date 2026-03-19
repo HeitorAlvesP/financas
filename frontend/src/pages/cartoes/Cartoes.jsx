@@ -5,6 +5,8 @@ function Cartoes() {
     const [busca, setBusca] = useState('');
 
     const [paginaAtual, setPaginaAtual] = useState(1);
+    const [telaAtual, setTelaAtual] = useState('lista');
+
     // Array fake ajustado para EXATAMENTE 4 itens, evitando scroll
     const cartoesFake = [1, 2, 3, 4, 5];
 
@@ -29,7 +31,8 @@ function Cartoes() {
                 style={linhaAcoesStyle}
             >
                 <button
-                    style={botaoNovoCartaoStyle}
+                    style={botaoAcaoCianoStyle}
+                    onClick={() => setTelaAtual(telaAtual === 'lista' ? 'cadastro' : 'lista')}
                     onMouseEnter={(e) => {
                         e.target.style.backgroundColor = '#00f3ff';
                         e.target.style.color = '#000';
@@ -43,99 +46,130 @@ function Cartoes() {
                         e.target.style.transform = 'scale(1)';
                     }}
                 >
-                    + NOVO CARTÃO
+                    {telaAtual === 'lista' ? '+ NOVO CARTÃO' : '← LISTAGEM'}
                 </button>
 
-                <div style={containerBuscaStyle}>
-                    <input
-                        type="text"
-                        placeholder="Buscar cartão pelo nome ou banco..."
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                        style={inputBuscaStyle}
-                        onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
-                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-                    />
-                </div>
+                {telaAtual === 'lista' && (
+                    <div style={containerBuscaStyle}>
+                        <input
+                            type="text"
+                            placeholder="Buscar cartão pelo nome ou banco..."
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
+                            style={inputBuscaStyle}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        />
+                    </div>
+                )}
             </motion.div>
 
-            {/* 3. ÁREA DA LISTAGEM (4 Cartões) */}
-            <div style={listaContainerStyle}>
-                {cartoesFake.map((item, index) => (
-                    <motion.div
-                        key={item}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.3 + (index * 0.1) }}
-                        style={itemCartaoStyle}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = 'var(--neon-green)';
-                            e.currentTarget.style.transform = 'translateX(5px)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = 'var(--border-color)';
-                            e.currentTarget.style.transform = 'translateX(0)';
-                        }}
-                    >
-                        <div style={infoCartaoStyle}>
-                            <div style={iconeFakeStyle}>💳</div>
-                            <div>
-                                <h3 style={nomeCartaoStyle}>Cartão de Crédito {item}</h3>
-                                <p style={detalheCartaoStyle}>Nubank • Final 1234</p>
-                            </div>
-                        </div>
+            {/* 3. CONTEÚDO PRINCIPAL (Troca entre Lista e Cadastro) */}
+            {telaAtual === 'lista' ? (
+                // --- TELA DE LISTAGEM ---
+                <>
+                    <div style={listaContainerStyle}>
+                        {cartoesFake.map((item, index) => (
+                            <motion.div
+                                key={item}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.3 + (index * 0.1) }}
+                                style={itemCartaoStyle}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = 'var(--neon-green)';
+                                    e.currentTarget.style.transform = 'translateX(5px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                                    e.currentTarget.style.transform = 'translateX(0)';
+                                }}
+                            >
+                                <div style={infoCartaoStyle}>
+                                    <div style={iconeFakeStyle}>💳</div>
+                                    <div>
+                                        <h3 style={nomeCartaoStyle}>Cartão de Crédito {item}</h3>
+                                        <p style={detalheCartaoStyle}>Nubank • Final 1234</p>
+                                    </div>
+                                </div>
+                                <div style={acaoCartaoStyle}>
+                                    <button style={quadradoAcaoStyle}>⚙️</button>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                        <div style={acaoCartaoStyle}>
-                            <button style={quadradoAcaoStyle}>⚙️</button>
+                    {/* Paginação */}
+                    <motion.div style={paginacaoContainerStyle}>
+                        <button style={btnPaginacaoSetaStyle}>&laquo; Anterior</button>
+                        <div style={paginasNumerosContainerStyle}>
+                            <button style={btnPaginaAtivaStyle}>1</button>
+                            <button style={btnPaginaInativaStyle}>2</button>
                         </div>
+                        <button style={btnPaginacaoSetaStyle}>Próxima &raquo;</button>
                     </motion.div>
-                ))}
-            </div>
-
-            {/* 4. PAGINAÇÃO (Em breve) */}
-
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }} // Aparece depois que a lista carregar
-                style={paginacaoContainerStyle}
-            >
-                {/* Botão Anterior */}
-                <button
-                    style={btnPaginacaoSetaStyle}
-                    onClick={() => setPaginaAtual(paginaAtual > 1 ? paginaAtual - 1 : 1)}
-                    disabled={paginaAtual === 1}
+                </>
+            ) : (
+                // --- TELA DE CADASTRO (Novo layout) ---
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }} // Vem deslizando da esquerda
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
+                    style={formularioContainerStyle}
                 >
-                    &laquo; Anterior
-                </button>
+                    <h2 style={tituloFormularioStyle}>Cadastrar Novo Cartão</h2>
 
-                {/* Números das Páginas (Exemplo visual de 2 páginas) */}
-                <div style={paginasNumerosContainerStyle}>
-                    <button
-                        style={paginaAtual === 1 ? btnPaginaAtivaStyle : btnPaginaInativaStyle}
-                        onClick={() => setPaginaAtual(1)}
-                    >
-                        1
-                    </button>
-                    <button
-                        style={paginaAtual === 2 ? btnPaginaAtivaStyle : btnPaginaInativaStyle}
-                        onClick={() => setPaginaAtual(2)}
-                    >
-                        2
-                    </button>
-                </div>
+                    <form style={gridFormularioStyle}>
+                        {/* Linha 1 */}
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Nome do Cartão (Ex: Nubank)</label>
+                            <input type="text" style={inputFormStyle} placeholder="Digite o nome..." />
+                        </div>
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Nome do Titular</label>
+                            <input type="text" style={inputFormStyle} placeholder="Como está no cartão..." />
+                        </div>
 
-                {/* Botão Próxima */}
-                <button
-                    style={btnPaginacaoSetaStyle}
-                    onClick={() => setPaginaAtual(paginaAtual < 2 ? paginaAtual + 1 : 2)}
-                    disabled={paginaAtual === 2}
-                >
-                    Próxima &raquo;
-                </button>
-            </motion.div>
+                        {/* Linha 2 */}
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Final do Cartão (4 dígitos)</label>
+                            <input type="text" style={inputFormStyle} maxLength="4" placeholder="Ex: 1234" />
+                        </div>
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Tipo de Cartão</label>
+                            <select style={inputFormStyle}>
+                                <option value="C">Crédito</option>
+                                <option value="D">Débito</option>
+                                <option value="V">Vale Alimentação/Refeição</option>
+                            </select>
+                        </div>
 
+                        {/* Linha 3 */}
+                        <div style={grupoInputStyle}>
+                            <label style={labelStyle}>Limite (R$)</label>
+                            <input type="text" style={inputFormStyle} placeholder="Ex: 5000,00" />
+                        </div>
 
+                        {/* Botão de Salvar */}
+                        <div style={containerBotaoSalvarStyle}>
+                            <button
+                                type="button"
+                                style={botaoSalvarStyle}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                    e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)'; 
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 0 10px var(--neon-glow)';
+                                }}
+                            >
+                                SALVAR CARTÃO
+                            </button>
+                        </div>
+                    </form>
+                </motion.div>
+            )}
         </div>
     );
 }
@@ -178,11 +212,11 @@ const linhaAcoesStyle = {
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginBottom: '20px' // Margem reduzida pela metade
+    marginBottom: '20px' 
 };
 
 // ESTILO DO BOTÃO "NOVO CARTÃO"
-const botaoNovoCartaoStyle = {
+const botaoAcaoCianoStyle = {
     backgroundColor: 'transparent',
     color: '#00f3ff', // Texto Azul Ciano
     border: '2px solid #00f3ff', // Borda Azul Ciano
@@ -337,6 +371,78 @@ const btnPaginaInativaStyle = {
     alignItems: 'center',
     cursor: 'pointer',
     transition: 'all 0.3s ease'
+};
+
+const formularioContainerStyle = {
+    backgroundColor: 'var(--bg-card)',
+    padding: '30px',
+    borderRadius: '12px',
+    border: '1px solid var(--border-color)',
+    flex: 1, // Preenche o espaço que a lista ocupava
+    display: 'flex',
+    flexDirection: 'column'
+};
+
+const tituloFormularioStyle = {
+    color: 'white',
+    fontSize: '1.3rem',
+    marginBottom: '25px',
+    marginTop: 0,
+    borderBottom: '1px solid var(--border-color)',
+    paddingBottom: '15px'
+};
+
+const gridFormularioStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr', // Divide o form em 2 colunas
+    gap: '20px',
+    width: '100%'
+};
+
+const grupoInputStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+};
+
+const labelStyle = {
+    color: 'var(--text-gray)',
+    fontSize: '0.9rem',
+    fontWeight: '500'
+};
+
+const inputFormStyle = {
+    width: '100%',
+    backgroundColor: 'var(--input-bg)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '8px',
+    padding: '12px 15px',
+    color: 'white',
+    fontSize: '0.95rem',
+    outline: 'none',
+    boxSizing: 'border-box'
+};
+
+// Botão de salvar pega a largura total (2 colunas)
+const containerBotaoSalvarStyle = {
+    gridColumn: '1 / -1',
+    display: 'flex',
+    justifyContent: 'flex-end', // Alinha o botão à direita
+    marginTop: '20px'
+};
+
+const botaoSalvarStyle = {
+    backgroundColor: 'var(--neon-green)',
+    color: 'black',
+    border: 'none',
+    padding: '12px 30px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.95rem',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    boxShadow: '0 0 15px var(--neon-glow)'
 };
 
 export default Cartoes;
