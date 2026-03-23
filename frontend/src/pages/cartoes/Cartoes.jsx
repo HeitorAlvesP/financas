@@ -60,7 +60,7 @@ function Cartoes() {
     };
 
     useEffect(() => {
-        buscarCartoes();
+        carregarCartoes();
     }, []);
 
     const itensPorPagina = 5;
