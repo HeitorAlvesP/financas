@@ -1,10 +1,10 @@
-const gridStyle = {
+export const gridStyle = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
   gap: '20px'
 };
 
-const cardStyle = {
+export const cardStyle = {
   backgroundColor: 'var(--bg-card)',
   padding: '25px',
   borderRadius: '16px',

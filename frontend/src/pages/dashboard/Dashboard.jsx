@@ -1,5 +1,10 @@
 import { motion } from 'framer-motion';
 
+import{
+  gridStyle,
+  cardStyle
+} from './style/styleDashboard.js'
+
 function Dashboard() {
   return (
     <motion.div 
