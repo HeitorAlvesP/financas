@@ -53,6 +53,7 @@ function Cartoes() {
     const [numeroCartao, setNumeroCartao] = useState('');
     const [tipoCartao, setTipoCartao] = useState('C');
     const [limite, setLimite] = useState('');
+    const [vencimentoFatura, setVencimentoFatura] = useState('');
 
     // --- NOVO: ESTADO PARA OS CARTÕES DO BANCO DE DADOS ---
     const [meusCartoes, setMeusCartoes] = useState([]);
@@ -83,7 +84,7 @@ function Cartoes() {
 
     // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO
     const executarSalvamento = async () => {
-        const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite);
+        const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
 
         if (sucesso) {
             setNome('');
@@ -91,9 +92,9 @@ function Cartoes() {
             setNumeroCartao('');
             setTipoCartao('C');
             setLimite('');
+            setVencimentoFatura('');
 
             carregarCartoes();
-
             setTelaAtual('lista');
         }
     };
@@ -385,6 +386,38 @@ function Cartoes() {
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
                         </div>
+
+                        {tipoCartao === 'C' && (
+                            <div style={grupoInputStyle}>
+                                <label style={labelStyle}>Dia de Vencimento</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    style={inputFormStyle}
+                                    placeholder="Ex: 10"
+                                    value={vencimentoFatura}
+                                    onChange={(e) => {
+                                        const valor = e.target.value;
+                                        if (valor === '') {
+                                            setVencimentoFatura('');
+                                            return;
+                                        }
+                                        const numero = Number(valor);
+
+                                        if (numero > 28) {
+                                            setVencimentoFatura('28');
+                                        } else if (numero < 1) {
+                                            setVencimentoFatura('1');
+                                        } else {
+                                            setVencimentoFatura(valor);
+                                        }
+                                    }} 
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                    onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                />
+                            </div>
+                        )}
 
                         {/* Botão de Salvar */}
                         <div style={containerBotaoSalvarStyle}>

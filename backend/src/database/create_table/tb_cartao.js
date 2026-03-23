@@ -12,6 +12,7 @@ export async function createTableCartao(db) {
             nome_responsavel TEXT NOT NULL,
             numero_cartao TEXT NOT NULL,
             tipo_cartao TEXT CHECK(tipo_cartao IN ('C', 'D', 'V')) NOT NULL,
+            vencimento_fatura INTEGER,
             limite TEXT,
             status INTEGER DEFAULT 1, -- 1: Ativo, 0: Inativo/Excluído
             id_usuario INTEGER NOT NULL,

@@ -1,6 +1,8 @@
 import Swal from 'sweetalert2';
 
 export const handleInativarCartao = async (cartao) => {
+
+    
     const confirmacao = await Swal.fire({
         title: 'Excluir Cartão?',
         text: `Tem certeza que deseja remover o cartão ${cartao.nome}?`,

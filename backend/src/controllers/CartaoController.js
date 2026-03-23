@@ -4,7 +4,9 @@
 
 /* #CREATE       */
 export const cadastrarCartao = async (db, req, res) => {
-    const { nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario } = req.body;
+    const { nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario, vencimento_fatura } = req.body;
+
+    console.log("DADOS QUE CHEGARAM NO NODE:", req.body);
 
     if (!nome || !nome_responsavel || !numero_cartao || !tipo_cartao || !id_usuario) {
         return res.status(400).json({ erro: "Todos os campos obrigatórios devem ser preenchidos." });
@@ -22,9 +24,9 @@ export const cadastrarCartao = async (db, req, res) => {
 
     try {
         const result = await db.run(
-            `INSERT INTO tb_cartao (nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [nome, nome_responsavel, numero_cartao, tipo_cartao, limiteTratado, id_usuario]
+            `INSERT INTO tb_cartao (nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario, vencimento_fatura) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [nome, nome_responsavel, numero_cartao, tipo_cartao, limiteTratado, id_usuario, vencimento_fatura || null]
         );
 
         return res.status(201).json({
