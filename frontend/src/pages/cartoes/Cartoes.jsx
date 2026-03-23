@@ -55,19 +55,34 @@ function Cartoes() {
     const [meusCartoes, setMeusCartoes] = useState([]);
 
     const carregarCartoes = async () => {
-        const dados = await buscarCartoesAPI(); // Vai no arquivo externo e busca
-        setMeusCartoes(dados); // Salva no estado da tela
+        const dados = await buscarCartoesAPI();
+        setMeusCartoes(dados);
     };
 
     useEffect(() => {
         carregarCartoes();
     }, []);
 
+
+    const cartoesFiltrados = meusCartoes.filter((cartao) => {
+        const termoBusca = busca.toLowerCase();
+        return (
+            cartao.nome.toLowerCase().includes(termoBusca) ||
+            cartao.nome_responsavel.toLowerCase().includes(termoBusca) ||
+            cartao.numero_cartao.includes(termoBusca)
+        );
+    });
+
+    useEffect(() => {
+        setPaginaAtual(1);
+    }, [busca]);
+
     const itensPorPagina = 5;
     const indexUltimoCartao = paginaAtual * itensPorPagina;
     const indexPrimeiroCartao = indexUltimoCartao - itensPorPagina;
-    const cartoesAtuais = meusCartoes.slice(indexPrimeiroCartao, indexUltimoCartao);
-    const totalPaginas = Math.ceil(meusCartoes.length / itensPorPagina);
+
+    const cartoesAtuais = cartoesFiltrados.slice(indexPrimeiroCartao, indexUltimoCartao);
+    const totalPaginas = Math.ceil(cartoesFiltrados.length / itensPorPagina);
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
     // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO

@@ -48,7 +48,8 @@ export const buscarCartoesPorUsuario = async (db, req, res) => {
         const cartoes = await db.all(
             `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, limite 
              FROM tb_cartao 
-             WHERE id_usuario = ?`,
+             WHERE id_usuario = ?
+             ORDER BY id_cartao`,
             [idUsuario]
         );
 

@@ -18,10 +18,10 @@ export const buscarCartoesAPI = async () => {
 
         if (resposta.ok) {
             const dados = await resposta.json();
-            return dados; // Retorna os cartões encontrados no banco!
+            return dados;
         } else {
             console.error("Erro retornado pela API ao buscar cartões.");
-            return []; // Retorna vazio em caso de falha
+            return []; 
         }
     } catch (erro) {
         console.error("Erro de conexão ao tentar buscar cartões:", erro);
