@@ -38,3 +38,24 @@ export const cadastrarCartao = async (db, req, res) => {
     }
 };
 /* ###         */
+
+
+export const buscarCartoesPorUsuario = async (db, req, res) => {
+    // Vamos receber o ID do utilizador através do URL (ex: /cartoes/usuario/5)
+    const { idUsuario } = req.params;
+
+    try {
+        const cartoes = await db.all(
+            `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, limite 
+             FROM tb_cartao 
+             WHERE id_usuario = ?`,
+            [idUsuario]
+        );
+
+        return res.status(200).json(cartoes);
+
+    } catch (error) {
+        console.error("Erro ao buscar cartões:", error);
+        return res.status(500).json({ erro: "Erro interno ao processar a listagem de cartões." });
+    }
+};

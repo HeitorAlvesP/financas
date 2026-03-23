@@ -41,7 +41,7 @@ export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, ti
     };
 
     try {
-        const resposta = await fetch('http://localhost:3000/api/usuarios/cartoes', {
+        const resposta = await fetch('http://localhost:3000/api/cartoes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

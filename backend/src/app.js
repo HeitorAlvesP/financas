@@ -4,6 +4,7 @@ import cors from 'cors';
 import { env } from 'process';
 import { iniciarBanco } from './database/config.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
+import cartaoRoutes from './routes/cartaoRoutes.js';
 
 const app = express();
 const port = env.PORT || 3000; 
@@ -19,6 +20,7 @@ async function startServer() {
 
         // Configuramos as rotas de usuário passando o banco para elas
         app.use('/api/usuarios', usuarioRoutes(db));
+        app.use('/api/cartoes', cartaoRoutes(db));
 
         // Rota simples de teste de status
         app.get('/api/status', (req, res) => {
