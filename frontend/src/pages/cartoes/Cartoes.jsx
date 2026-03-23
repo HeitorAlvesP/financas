@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 import { handleSalvarCartao } from './js/handleSalvarCartao';
 import { formatarMoeda } from './js/mascara_moeda';
+import { buscarCartoesAPI } from './js/buscarCartoes';
 
 import {
     acaoCartaoStyle,
@@ -50,12 +51,23 @@ function Cartoes() {
     const [tipoCartao, setTipoCartao] = useState('C');
     const [limite, setLimite] = useState('');
 
-    const cartoesFake = [1, 2, 3, 4, 5, 6, 7, 8];
+    // --- NOVO: ESTADO PARA OS CARTÕES DO BANCO DE DADOS ---
+    const [meusCartoes, setMeusCartoes] = useState([]);
+
+    const carregarCartoes = async () => {
+        const dados = await buscarCartoesAPI(); // Vai no arquivo externo e busca
+        setMeusCartoes(dados); // Salva no estado da tela
+    };
+
+    useEffect(() => {
+        buscarCartoes();
+    }, []);
+
     const itensPorPagina = 5;
     const indexUltimoCartao = paginaAtual * itensPorPagina;
     const indexPrimeiroCartao = indexUltimoCartao - itensPorPagina;
-    const cartoesAtuais = cartoesFake.slice(indexPrimeiroCartao, indexUltimoCartao);
-    const totalPaginas = Math.ceil(cartoesFake.length / itensPorPagina);
+    const cartoesAtuais = meusCartoes.slice(indexPrimeiroCartao, indexUltimoCartao);
+    const totalPaginas = Math.ceil(meusCartoes.length / itensPorPagina);
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
     // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO
@@ -68,6 +80,9 @@ function Cartoes() {
             setNumeroCartao('');
             setTipoCartao('C');
             setLimite('');
+
+            carregarCartoes();
+
             setTelaAtual('lista');
         }
     };
@@ -132,35 +147,45 @@ function Cartoes() {
                 // --- TELA DE LISTAGEM ---
                 <>
                     <div style={listaContainerStyle}>
-                        {/* AQUI: Usamos cartoesAtuais em vez de cartoesFake */}
-                        {cartoesAtuais.map((item, index) => (
-                            <motion.div
-                                key={item}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.40, delay: 0.1 + (index * 0.1) }}
-                                style={itemCartaoStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.borderColor = 'var(--neon-green)';
-                                    e.currentTarget.style.transform = 'translateX(5px)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.borderColor = 'var(--border-color)';
-                                    e.currentTarget.style.transform = 'translateX(0)';
-                                }}
-                            >
-                                <div style={infoCartaoStyle}>
-                                    <div style={iconeFakeStyle}>💳</div>
-                                    <div>
-                                        <h3 style={nomeCartaoStyle}>Cartão de Crédito {item}</h3>
-                                        <p style={detalheCartaoStyle}>Nubank • Início 1234</p>
+                        {/* --- NOVO: Mensagem caso a lista venha vazia --- */}
+                        {cartoesAtuais.length === 0 ? (
+                            <p style={{ color: 'var(--text-gray)', textAlign: 'center', marginTop: '20px' }}>
+                                Nenhum cartão cadastrado ainda.
+                            </p>
+                        ) : (
+                            /* --- NOVO: Usando o 'cartao' de dentro do array 'cartoesAtuais' --- */
+                            cartoesAtuais.map((cartao, index) => (
+                                <motion.div
+                                    key={cartao.id_cartao} // O ID do banco como chave única
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.40, delay: 0.1 + (index * 0.1) }}
+                                    style={itemCartaoStyle}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = 'var(--neon-green)';
+                                        e.currentTarget.style.transform = 'translateX(5px)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderColor = 'var(--border-color)';
+                                        e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                >
+                                    <div style={infoCartaoStyle}>
+                                        <div style={iconeFakeStyle}>💳</div>
+                                        <div>
+                                            {/* --- NOVO: Injetando os dados reais --- */}
+                                            <h3 style={nomeCartaoStyle}>{cartao.nome}</h3>
+                                            <p style={detalheCartaoStyle}>
+                                                {cartao.nome_responsavel} • Início {cartao.numero_cartao}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div style={acaoCartaoStyle}>
-                                    <button style={quadradoAcaoStyle}>⚙️</button>
-                                </div>
-                            </motion.div>
-                        ))}
+                                    <div style={acaoCartaoStyle}>
+                                        <button style={quadradoAcaoStyle}>⚙️</button>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
                     </div>
 
                     {/* Paginação */}
@@ -175,7 +200,6 @@ function Cartoes() {
                             </button>
 
                             <div style={paginasNumerosContainerStyle}>
-                                {/* Gera os botões de números automaticamente */}
                                 {numerosPaginas.map(numero => (
                                     <button
                                         key={numero}
@@ -273,7 +297,7 @@ function Cartoes() {
                                 style={inputFormStyle}
                                 placeholder="Ex: R$ 0.000,00"
                                 value={limite}
-                                onChange={(e) => setLimite(formatarMoeda(e.target.value))} 
+                                onChange={(e) => setLimite(formatarMoeda(e.target.value))}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                 onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                             />
