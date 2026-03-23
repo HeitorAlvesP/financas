@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { handleSalvarCartao } from './js/handleSalvarCartao';
 import { formatarMoeda } from './js/mascara_moeda';
 import { buscarCartoesAPI } from './js/buscarCartoes';
+import { aplicarFiltroBusca } from './js/filtrarCartoes';
+import { handleInativarCartao } from './js/handleInativarCartao';
+
 
 import {
     acaoCartaoStyle,
@@ -64,14 +67,7 @@ function Cartoes() {
     }, []);
 
 
-    const cartoesFiltrados = meusCartoes.filter((cartao) => {
-        const termoBusca = busca.toLowerCase();
-        return (
-            cartao.nome.toLowerCase().includes(termoBusca) ||
-            cartao.nome_responsavel.toLowerCase().includes(termoBusca) ||
-            cartao.numero_cartao.includes(termoBusca)
-        );
-    });
+    const cartoesFiltrados = aplicarFiltroBusca(meusCartoes, busca);
 
     useEffect(() => {
         setPaginaAtual(1);
@@ -101,7 +97,6 @@ function Cartoes() {
             setTelaAtual('lista');
         }
     };
-
 
     return (
         <div style={paginaPrincipalStyle}>
@@ -195,8 +190,81 @@ function Cartoes() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div style={acaoCartaoStyle}>
-                                        <button style={quadradoAcaoStyle}>⚙️</button>
+                                    <div style={{ ...acaoCartaoStyle, gap: '10px' }}> {/* Adicionado um gap para desgrudar os botões */}
+
+                                        {/* --- BOTÃO DE EDITAR (LÁPIS CIANO) --- */}
+                                        <button
+                                            style={quadradoAcaoStyle}
+                                            onMouseEnter={(e) => {
+                                                const btn = e.currentTarget;
+                                                const svg = btn.querySelector('svg');
+                                                btn.style.backgroundColor = '#00f3ff';
+                                                btn.style.boxShadow = '0 0 20px rgba(0, 243, 255, 0.6)';
+                                                btn.style.transform = 'scale(1.1)';
+                                                if (svg) {
+                                                    svg.style.stroke = '#000000';
+                                                    svg.style.filter = 'none';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const btn = e.currentTarget;
+                                                const svg = btn.querySelector('svg');
+                                                btn.style.backgroundColor = 'transparent';
+                                                btn.style.boxShadow = 'none';
+                                                btn.style.transform = 'scale(1)';
+                                                if (svg) {
+                                                    svg.style.stroke = '#00f3ff';
+                                                    svg.style.filter = 'drop-shadow(0 0 5px rgba(0, 243, 255, 0.5))';
+                                                }
+                                            }}
+                                        >
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f3ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'all 0.2s ease', filter: 'drop-shadow(0 0 5px rgba(0, 243, 255, 0.5))' }}>
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                            </svg>
+                                        </button>
+
+                                        {/* --- BOTÃO DE EXCLUIR (LIXEIRA VERMELHA) --- */}
+                                        <button
+                                            style={quadradoAcaoStyle}
+                                            onClick={async () => {
+                                                const inativou = await handleInativarCartao(cartao);
+                                                if (inativou) {
+                                                    carregarCartoes();
+                                                }
+                                            }} // CHAMA O ALERTA AQUI
+                                            onMouseEnter={(e) => {
+                                                const btn = e.currentTarget;
+                                                const svg = btn.querySelector('svg');
+                                                btn.style.backgroundColor = '#ff003c'; // Fundo Vermelho
+                                                btn.style.boxShadow = '0 0 20px rgba(255, 0, 60, 0.6)'; // Sombra Vermelha
+                                                btn.style.transform = 'scale(1.1)';
+                                                if (svg) {
+                                                    svg.style.stroke = '#ffffff'; // Ícone Branco para dar contraste
+                                                    svg.style.filter = 'none';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const btn = e.currentTarget;
+                                                const svg = btn.querySelector('svg');
+                                                btn.style.backgroundColor = 'transparent';
+                                                btn.style.boxShadow = 'none';
+                                                btn.style.transform = 'scale(1)';
+                                                if (svg) {
+                                                    svg.style.stroke = '#ff003c'; // Volta para o vermelho
+                                                    svg.style.filter = 'drop-shadow(0 0 5px rgba(255, 0, 60, 0.5))';
+                                                }
+                                            }}
+                                        >
+                                            {/* Ícone de Lixeira em SVG */}
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff003c" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'all 0.2s ease', filter: 'drop-shadow(0 0 5px rgba(255, 0, 60, 0.5))' }}>
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
+
                                     </div>
                                 </motion.div>
                             ))
