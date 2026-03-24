@@ -115,7 +115,7 @@ export const nomeCartaoStyle = {
 export const detalheCartaoStyle = {
     color: 'var(--text-gray)',
     margin: 0,
-    fontSize: '0.9rem'
+    fontSize: '0.8rem'
 };
 
 export const acaoCartaoStyle = {

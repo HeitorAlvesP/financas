@@ -84,22 +84,6 @@ function Cartoes() {
     const totalPaginas = Math.ceil(cartoesFiltrados.length / itensPorPagina);
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
-    // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO
-    // const executarSalvamento = async () => {
-    //     const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
-
-    //     if (sucesso) {
-    //         setNome('');
-    //         setNomeResponsavel('');
-    //         setNumeroCartao('');
-    //         setTipoCartao('C');
-    //         setLimite('');
-    //         setVencimentoFatura('');
-
-    //         carregarCartoes();
-    //         setTelaAtual('lista');
-    //     }
-    // };
 
 
     const executarSalvamento = async () => {
@@ -136,6 +120,18 @@ function Cartoes() {
         setIdCartaoEditando(cartao.id_cartao); 
         setTelaAtual('cadastro'); 
     };
+
+    function returnTipoCartao (tipo_cartao) {
+        if(tipo_cartao == 'C'){
+            return 'CRÉDITO'
+        }else if(tipo_cartao == 'D'){
+            return 'DÉBITO'
+        }else if(tipo_cartao == 'V'){
+            return 'VR/VA'
+        }else{
+            'Error'
+        }
+    }
 
     return (
         <div style={paginaPrincipalStyle}>
@@ -237,7 +233,7 @@ function Cartoes() {
                                             {/* --- NOVO: Injetando os dados reais --- */}
                                             <h3 style={nomeCartaoStyle}>{cartao.nome}</h3>
                                             <p style={detalheCartaoStyle}>
-                                                {cartao.nome_responsavel} • Início {cartao.numero_cartao}
+                                                {returnTipoCartao(cartao.tipo_cartao)} • Início {cartao.numero_cartao}
                                             </p>
                                         </div>
                                     </div>
