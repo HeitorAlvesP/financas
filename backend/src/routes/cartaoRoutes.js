@@ -4,6 +4,7 @@ import {
     cadastrarCartao,
     buscarCartoesPorUsuario,
     inativarCartao,
+    atualizarCartao,
 } from '../controllers/CartaoController.js';
 
 const router = express.Router();
@@ -13,8 +14,9 @@ export default function (db) {
     router.post('/',                                  verificarToken, (req, res) => cadastrarCartao(db, req, res));
 
     // Rotas abaixo
-    router.get('/usuario/:idUsuario',                 verificarToken, (req, res) => buscarCartoesPorUsuario(db, req, res));
-    router.put('/:idCartao/inativar',                 verificarToken, (req, res) => inativarCartao(db, req, res));
+    router.get('/usuario/:idUsuario',          verificarToken, (req, res) => buscarCartoesPorUsuario(db, req, res));
+    router.put('/:idCartao/inativar',          verificarToken, (req, res) => inativarCartao(db, req, res));
+    router.put('/:idCartao',                   verificarToken, (req, res) => atualizarCartao(db, req, res));
     
 
     return router;

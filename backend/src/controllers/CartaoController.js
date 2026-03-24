@@ -43,12 +43,11 @@ export const cadastrarCartao = async (db, req, res) => {
 
 
 export const buscarCartoesPorUsuario = async (db, req, res) => {
-    // Vamos receber o ID do utilizador através do URL (ex: /cartoes/usuario/5)
     const { idUsuario } = req.params;
 
     try {
         const cartoes = await db.all(
-            `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, limite 
+            `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, limite, vencimento_fatura
              FROM tb_cartao 
              WHERE id_usuario = ? AND status = 1
              ORDER BY id_cartao`,
@@ -91,6 +90,48 @@ export const inativarCartao = async (db, req, res) => {
     } catch (error) {
         console.error("Erro ao inativar cartão:", error);
         return res.status(500).json({ erro: "Erro interno ao tentar inativar o cartão no banco." });
+    }
+};
+/* ###         */
+
+
+
+/* #UPDATE - EDITAR DADOS DO CARTÃO */
+export const atualizarCartao = async (db, req, res) => {
+    const { idCartao } = req.params;
+    
+    const { nome, nome_responsavel, tipo_cartao, limite, vencimento_fatura, id_usuario } = req.body;
+
+    if (!idCartao || !id_usuario) {
+        return res.status(400).json({ erro: "ID do cartão e do usuário são obrigatórios para atualizar." });
+    }
+
+    let limiteTratado = null;
+    if (limite) {
+        limiteTratado = limite.replace('R$', '').replace(/\s/g, '').replace(/\./g, '');
+    }
+
+    try {
+        const result = await db.run(
+            `UPDATE tb_cartao 
+             SET nome = ?, 
+                 nome_responsavel = ?, 
+                 tipo_cartao = ?, 
+                 limite = ?, 
+                 vencimento_fatura = ?
+             WHERE id_cartao = ? AND id_usuario = ?`,
+            [nome, nome_responsavel, tipo_cartao, limiteTratado, vencimento_fatura || null, idCartao, id_usuario]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({ erro: "Cartão não encontrado ou sem permissão de edição." });
+        }
+
+        return res.status(200).json({ mensagem: "Cartão atualizado com sucesso!" });
+
+    } catch (error) {
+        console.error("Erro ao atualizar cartão:", error);
+        return res.status(500).json({ erro: "Erro interno ao atualizar o cartão no banco." });
     }
 };
 /* ###         */

@@ -20,3 +20,6 @@ export const verificarToken = (req, res, next) => {
         return res.status(403).json({ erro: "Sessão expirada ou token inválido. Faça login novamente." });
     }
 };
+
+
+

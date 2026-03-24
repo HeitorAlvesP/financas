@@ -120,6 +120,7 @@ export const loginUsuario = async (db, req, res) => {
                     nome: usuario.nome,
                     email: usuario.email
                 }
+                
             });
         } else {
             return res.status(401).json({ erro: "E-mail ou senha incorretos." });

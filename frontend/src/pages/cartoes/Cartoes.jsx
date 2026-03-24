@@ -6,6 +6,7 @@ import { formatarMoeda } from './js/mascara_moeda';
 import { buscarCartoesAPI } from './js/buscarCartoes';
 import { aplicarFiltroBusca } from './js/filtrarCartoes';
 import { handleInativarCartao } from './js/handleInativarCartao';
+import { handleEditarCartao } from './js/handleEditarCartao';
 
 
 import {
@@ -54,6 +55,7 @@ function Cartoes() {
     const [tipoCartao, setTipoCartao] = useState('C');
     const [limite, setLimite] = useState('');
     const [vencimentoFatura, setVencimentoFatura] = useState('');
+    const [idCartaoEditando, setIdCartaoEditando] = useState(null);
 
     // --- NOVO: ESTADO PARA OS CARTÕES DO BANCO DE DADOS ---
     const [meusCartoes, setMeusCartoes] = useState([]);
@@ -83,8 +85,31 @@ function Cartoes() {
     const numerosPaginas = Array.from({ length: totalPaginas }, (_, i) => i + 1);
 
     // -- ESTADO DA FUNÇÃO QUE MANDA PRO BANCO
+    // const executarSalvamento = async () => {
+    //     const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
+
+    //     if (sucesso) {
+    //         setNome('');
+    //         setNomeResponsavel('');
+    //         setNumeroCartao('');
+    //         setTipoCartao('C');
+    //         setLimite('');
+    //         setVencimentoFatura('');
+
+    //         carregarCartoes();
+    //         setTelaAtual('lista');
+    //     }
+    // };
+
+
     const executarSalvamento = async () => {
-        const sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
+        let sucesso = false;
+
+        if (idCartaoEditando) {
+            sucesso = await handleEditarCartao(idCartaoEditando, nome, nomeResponsavel, tipoCartao, limite, vencimentoFatura);
+        } else {
+            sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
+        }
 
         if (sucesso) {
             setNome('');
@@ -93,10 +118,23 @@ function Cartoes() {
             setTipoCartao('C');
             setLimite('');
             setVencimentoFatura('');
-
-            carregarCartoes();
+            setIdCartaoEditando(null);
+            
+            carregarCartoes(); 
             setTelaAtual('lista');
         }
+    };
+
+    const prepararEdicao = (cartao) => {
+        setNome(cartao.nome);
+        setNomeResponsavel(cartao.nome_responsavel);
+        setNumeroCartao(cartao.numero_cartao);
+        setTipoCartao(cartao.tipo_cartao);
+        setLimite(cartao.limite ? formatarMoeda(cartao.limite.toString()) : ''); 
+        setVencimentoFatura(cartao.vencimento_fatura || ''); 
+        
+        setIdCartaoEditando(cartao.id_cartao); 
+        setTelaAtual('cadastro'); 
     };
 
     return (
@@ -121,7 +159,20 @@ function Cartoes() {
             >
                 <button
                     style={botaoAcaoCianoStyle}
-                    onClick={() => setTelaAtual(telaAtual === 'lista' ? 'cadastro' : 'lista')}
+                    onClick={() => {
+                        if (telaAtual === 'lista') {
+                            setNome('');
+                            setNomeResponsavel('');
+                            setNumeroCartao('');
+                            setTipoCartao('C');
+                            setLimite('');
+                            setVencimentoFatura('');
+                            setIdCartaoEditando(null); 
+                            setTelaAtual('cadastro');
+                        } else {
+                            setTelaAtual('lista');
+                        }
+                    }}
                     onMouseEnter={(e) => {
                         e.target.style.backgroundColor = '#00f3ff';
                         e.target.style.color = '#000';
@@ -155,7 +206,6 @@ function Cartoes() {
 
             {/* 3. CONTEÚDO PRINCIPAL (Troca entre Lista e Cadastro) */}
             {telaAtual === 'lista' ? (
-                // --- TELA DE LISTAGEM ---
                 <>
                     <div style={listaContainerStyle}>
                         {/* --- NOVO: Mensagem caso a lista venha vazia --- */}
@@ -196,6 +246,7 @@ function Cartoes() {
                                         {/* --- BOTÃO DE EDITAR (LÁPIS CIANO) --- */}
                                         <button
                                             style={quadradoAcaoStyle}
+                                            onClick={() => prepararEdicao(cartao)}
                                             onMouseEnter={(e) => {
                                                 const btn = e.currentTarget;
                                                 const svg = btn.querySelector('svg');
@@ -313,7 +364,9 @@ function Cartoes() {
                     transition={{ duration: 0.4 }}
                     style={formularioContainerStyle}
                 >
-                    <h2 style={tituloFormularioStyle}>Cadastrar Novo Cartão</h2>
+                    <h2 style={tituloFormularioStyle}>
+                        {idCartaoEditando ? 'Editar Cartão' : 'Cadastrar Novo Cartão'}
+                    </h2>
 
                     <form style={gridFormularioStyle}>
                         {/* Linha 1 */}
@@ -321,7 +374,13 @@ function Cartoes() {
                             <label style={labelStyle}>Nome do Cartão (Ex: Nubank)</label>
                             <input
                                 type="text"
-                                style={inputFormStyle}
+                                // style={inputFormStyle}
+                                style={{
+                                    ...inputFormStyle, 
+                                    opacity: idCartaoEditando ? 0.5 : 1,
+                                    cursor: idCartaoEditando ? 'not-allowed' : 'text'
+                                }}
+                                disabled={!!idCartaoEditando} 
                                 placeholder="Digite o nome..."
                                 value={nome}
                                 onChange={(e) => setNome(e.target.value)}
@@ -348,7 +407,12 @@ function Cartoes() {
                             <label style={labelStyle}>Primeiros 4 dígitos</label>
                             <input
                                 type="text"
-                                style={inputFormStyle}
+                                style={{
+                                    ...inputFormStyle, 
+                                    opacity: idCartaoEditando ? 0.5 : 1,
+                                    cursor: idCartaoEditando ? 'not-allowed' : 'text'
+                                }}
+                                disabled={!!idCartaoEditando} 
                                 maxLength="4"
                                 placeholder="Ex: 0000"
                                 value={numeroCartao}
@@ -361,7 +425,13 @@ function Cartoes() {
                         <div style={grupoInputStyle}>
                             <label style={labelStyle}>Tipo de Cartão</label>
                             <select
-                                style={inputFormStyle}
+                                // style={inputFormStyle}
+                                style={{
+                                    ...inputFormStyle, 
+                                    opacity: idCartaoEditando ? 0.5 : 1,
+                                    cursor: idCartaoEditando ? 'not-allowed' : 'text'
+                                }}
+                                disabled={!!idCartaoEditando} 
                                 value={tipoCartao}
                                 onChange={(e) => setTipoCartao(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
@@ -424,7 +494,7 @@ function Cartoes() {
                             <button
                                 type="button"
                                 style={botaoSalvarStyle}
-                                onClick={executarSalvamento} // CHAMA A FUNÇÃO AQUI!
+                                onClick={executarSalvamento} 
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)';
