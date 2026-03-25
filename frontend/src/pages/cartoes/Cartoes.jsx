@@ -105,12 +105,12 @@ function Cartoes() {
             setTipoCartao('C');
             setLimite('');
             setVencimentoFatura('');
-            setSaldo('');            
-            setTipoRecarga('FIXO');  
-            setDiaRecarga('');       
+            setSaldo('');
+            setTipoRecarga('FIXO');
+            setDiaRecarga('');
             setIdCartaoEditando(null);
-            
-            carregarCartoes(); 
+
+            carregarCartoes();
             setTelaAtual('lista');
         }
     };
@@ -120,24 +120,24 @@ function Cartoes() {
         setNomeResponsavel(cartao.nome_responsavel);
         setNumeroCartao(cartao.numero_cartao);
         setTipoCartao(cartao.tipo_cartao);
-        setLimite(cartao.limite ? formatarMoeda(cartao.limite.toString()) : ''); 
-        setVencimentoFatura(cartao.vencimento_fatura || ''); 
+        setLimite(cartao.limite ? formatarMoeda(cartao.limite.toString()) : '');
+        setVencimentoFatura(cartao.vencimento_fatura || '');
         setSaldo(cartao.saldo ? formatarMoeda(cartao.saldo.toString()) : '');
         setTipoRecarga(cartao.tipo_recarga || 'FIXO');
         setDiaRecarga(cartao.dia_recarga || '');
-        
-        setIdCartaoEditando(cartao.id_cartao); 
-        setTelaAtual('cadastro'); 
+
+        setIdCartaoEditando(cartao.id_cartao);
+        setTelaAtual('cadastro');
     };
 
-    function returnTipoCartao (tipo_cartao) {
-        if(tipo_cartao == 'C'){
+    function returnTipoCartao(tipo_cartao) {
+        if (tipo_cartao == 'C') {
             return 'CRÉDITO'
-        }else if(tipo_cartao == 'D'){
+        } else if (tipo_cartao == 'D') {
             return 'DÉBITO'
-        }else if(tipo_cartao == 'V'){
-            return 'VR/VA'
-        }else{
+        } else if (tipo_cartao == 'V') {
+            return 'VALE'
+        } else {
             'Error'
         }
     }
@@ -172,7 +172,7 @@ function Cartoes() {
                             setTipoCartao('C');
                             setLimite('');
                             setVencimentoFatura('');
-                            setIdCartaoEditando(null); 
+                            setIdCartaoEditando(null);
                             setTelaAtual('cadastro');
                         } else {
                             setTelaAtual('lista');
@@ -222,7 +222,7 @@ function Cartoes() {
                             /* --- NOVO: Usando o 'cartao' de dentro do array 'cartoesAtuais' --- */
                             cartoesAtuais.map((cartao, index) => (
                                 <motion.div
-                                    key={cartao.id_cartao} 
+                                    key={cartao.id_cartao}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.40, delay: 0.1 + (index * 0.1) }}
@@ -236,16 +236,47 @@ function Cartoes() {
                                         e.currentTarget.style.transform = 'translateX(0)';
                                     }}
                                 >
+
                                     <div style={infoCartaoStyle}>
-                                        <div style={iconeFakeStyle}>💳</div>
+                                        {/* --- ÍCONE DINÂMICO --- */}
+                                        <div style={iconeFakeStyle}>
+                                            {cartao.tipo_cartao === 'V' ? '🍔' : '💳'}
+                                        </div>
+
                                         <div>
-                                            {/* --- NOVO: Injetando os dados reais --- */}
                                             <h3 style={nomeCartaoStyle}>{cartao.nome}</h3>
-                                            <p style={detalheCartaoStyle}>
-                                                {returnTipoCartao(cartao.tipo_cartao)} • Início {cartao.numero_cartao}
-                                            </p>
+
+                                            {/* --- TEXTO DINÂMICO BASEADO NO TIPO DO CARTÃO --- */}
+                                            
+                                            {/* LAYOUT 1: SE FOR VALE ALIMENTAÇÃO/REFEIÇÃO */}
+                                            {cartao.tipo_cartao === 'V' && (
+                                                <p style={detalheCartaoStyle}>
+                                                    {returnTipoCartao(cartao.tipo_cartao)} • Saldo: R$ {cartao.saldo || '0,00'} • Recarga: {
+                                                        cartao.dia_recarga == 99
+                                                            ? (cartao.tipo_recarga === 'FIXO' ? 'Último do mês' : 'Último dia útil')
+                                                            : (cartao.tipo_recarga === 'FIXO' ? `Dia ${cartao.dia_recarga}` : `${cartao.dia_recarga}º Dia Útil`)
+                                                    }
+                                                </p>
+                                            )}
+
+                                            {/* LAYOUT 2: SE FOR CRÉDITO */}
+                                            {cartao.tipo_cartao === 'C' && (
+                                                <p style={detalheCartaoStyle}>
+                                                    {returnTipoCartao(cartao.tipo_cartao)} • Limite: R$ {cartao.limite || '0,00'} • Início {cartao.numero_cartao}
+                                                </p>
+                                            )}
+
+                                            {/* LAYOUT 3: SE FOR DÉBITO */}
+                                            {cartao.tipo_cartao === 'D' && (
+                                                <p style={detalheCartaoStyle}>
+                                                    {returnTipoCartao(cartao.tipo_cartao)} • Início {cartao.numero_cartao}
+                                                </p>
+                                            )}
+
                                         </div>
                                     </div>
+
+
                                     <div style={{ ...acaoCartaoStyle, gap: '10px' }}> {/* Adicionado um gap para desgrudar os botões */}
 
                                         {/* --- BOTÃO DE EDITAR (LÁPIS CIANO) --- */}
@@ -364,7 +395,7 @@ function Cartoes() {
             ) : (
                 // --- TELA DE CADASTRO (Novo layout) ---
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }} 
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4 }}
                     style={formularioContainerStyle}
@@ -380,11 +411,11 @@ function Cartoes() {
                             <input
                                 type="text"
                                 style={{
-                                    ...inputFormStyle, 
+                                    ...inputFormStyle,
                                     opacity: idCartaoEditando ? 0.5 : 1,
                                     cursor: idCartaoEditando ? 'not-allowed' : 'text'
                                 }}
-                                disabled={!!idCartaoEditando} 
+                                disabled={!!idCartaoEditando}
                                 placeholder="Digite o nome..."
                                 value={nome}
                                 onChange={(e) => setNome(e.target.value)}
@@ -412,11 +443,11 @@ function Cartoes() {
                             <input
                                 type="text"
                                 style={{
-                                    ...inputFormStyle, 
+                                    ...inputFormStyle,
                                     opacity: idCartaoEditando ? 0.5 : 1,
                                     cursor: idCartaoEditando ? 'not-allowed' : 'text'
                                 }}
-                                disabled={!!idCartaoEditando} 
+                                disabled={!!idCartaoEditando}
                                 maxLength="4"
                                 placeholder="Ex: 0000"
                                 value={numeroCartao}
@@ -431,11 +462,11 @@ function Cartoes() {
                             <select
                                 // style={inputFormStyle}
                                 style={{
-                                    ...inputFormStyle, 
+                                    ...inputFormStyle,
                                     opacity: idCartaoEditando ? 0.5 : 1,
                                     cursor: idCartaoEditando ? 'not-allowed' : 'text'
                                 }}
-                                disabled={!!idCartaoEditando} 
+                                disabled={!!idCartaoEditando}
                                 value={tipoCartao}
                                 onChange={(e) => setTipoCartao(e.target.value)}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
@@ -481,7 +512,7 @@ function Cartoes() {
                                         if (num > 28) setVencimentoFatura('28');
                                         else if (num < 1) setVencimentoFatura('1');
                                         else setVencimentoFatura(val);
-                                    }} 
+                                    }}
                                     onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                     onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                                 />
@@ -498,7 +529,7 @@ function Cartoes() {
                                         style={inputFormStyle}
                                         placeholder="Ex: R$ 500,00"
                                         value={saldo}
-                                        onChange={(e) => setSaldo(formatarMoeda(e.target.value))} // Usa a mesma máscara!
+                                        onChange={(e) => setSaldo(formatarMoeda(e.target.value))}
                                         onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                         onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                                     />
@@ -511,7 +542,7 @@ function Cartoes() {
                                         value={tipoRecarga}
                                         onChange={(e) => {
                                             setTipoRecarga(e.target.value);
-                                            setDiaRecarga(''); 
+                                            setDiaRecarga('');
                                         }}
                                         onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                         onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
@@ -525,10 +556,10 @@ function Cartoes() {
                                     <label style={labelStyle}>
                                         {tipoRecarga === 'FIXO' ? 'Dia da Recarga' : 'Qual Dia Útil?'}
                                     </label>
-                                    
+
                                     {/* NOVO: Container Flex para colocar o Input e o Checkbox lado a lado */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                        
+
                                         <input
                                             type="number"
                                             min="1"
@@ -536,20 +567,20 @@ function Cartoes() {
                                             style={{
                                                 ...inputFormStyle,
                                                 flex: 1,
-                                                opacity: diaRecarga === '99' ? 0.5 : 1, 
+                                                opacity: diaRecarga === '99' ? 0.5 : 1,
                                                 cursor: diaRecarga === '99' ? 'not-allowed' : 'text'
                                             }}
                                             placeholder={tipoRecarga === 'FIXO' ? "Ex: 20" : "Ex: 2 (2º dia útil)"}
                                             value={diaRecarga === '99' ? '' : diaRecarga}
-                                            disabled={diaRecarga === '99'} 
+                                            disabled={diaRecarga === '99'}
                                             onChange={(e) => {
                                                 const val = e.target.value;
-                                                
-                                                if (val === '') { 
-                                                    setDiaRecarga(''); 
-                                                    return; 
+
+                                                if (val === '') {
+                                                    setDiaRecarga('');
+                                                    return;
                                                 }
-                                                
+
                                                 const num = Number(val);
                                                 const limiteMaximo = tipoRecarga === 'FIXO' ? 28 : 5;
 
@@ -560,30 +591,30 @@ function Cartoes() {
                                                 } else {
                                                     setDiaRecarga(val);
                                                 }
-                                            }} 
+                                            }}
                                             onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                             onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                                         />
 
                                         {/* NOVO: Checkbox de Último Dia (Só aparece se o tipo for UTIL) */}
                                         {tipoRecarga === 'UTIL' && (
-                                            <label style={{ 
-                                                ...labelStyle, 
-                                                marginBottom: 0, // Remove a margem padrão do label
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                gap: '8px', 
+                                            <label style={{
+                                                ...labelStyle,
+                                                marginBottom: 0,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
                                                 cursor: 'pointer',
-                                                whiteSpace: 'nowrap' // Impede o texto de quebrar linha
+                                                whiteSpace: 'nowrap'
                                             }}>
-                                                <input 
+                                                <input
                                                     type="checkbox"
                                                     checked={diaRecarga === '99'}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setDiaRecarga('99'); // Aciona o número mágico!
+                                                            setDiaRecarga('99');
                                                         } else {
-                                                            setDiaRecarga(''); // Desmarca e limpa o valor
+                                                            setDiaRecarga('');
                                                         }
                                                     }}
                                                     style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--neon-green)' }}
@@ -602,7 +633,7 @@ function Cartoes() {
                             <button
                                 type="button"
                                 style={botaoSalvarStyle}
-                                onClick={executarSalvamento} 
+                                onClick={executarSalvamento}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0 0 25px var(--neon-green)';
