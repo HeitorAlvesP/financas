@@ -16,8 +16,8 @@ export const verificarToken = (req, res, next) => {
         next();
 
     } catch (error) {
-        console.error("Erro na verificação do token:", error);
-        return res.status(403).json({ erro: "Sessão expirada ou token inválido. Faça login novamente." });
+        console.error("Erro na verificação do token:", error.message);
+        return res.status(401).json({ erro: "Acesso negado. Token inválido ou expirado." });
     }
 };
 
