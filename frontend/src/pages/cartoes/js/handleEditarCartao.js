@@ -1,8 +1,13 @@
 import Swal from 'sweetalert2';
 
-export const handleEditarCartao = async (idCartao, nome, nomeResponsavel, tipoCartao, limite, vencimentoFatura) => {
+export const handleEditarCartao = async (idCartao, nome, nomeResponsavel, tipoCartao, limite, vencimentoFatura, saldo, tipoRecarga, diaRecarga) => {
     
-    if (!nome || !nomeResponsavel || !limite) {
+    if (
+        !nome || 
+        !nomeResponsavel || 
+        (tipoCartao !== 'V' && !limite) || 
+        (tipoCartao === 'V' && !saldo)     
+    ) {
         Swal.fire({
             icon: 'warning',
             title: 'Atenção!',
@@ -26,7 +31,10 @@ export const handleEditarCartao = async (idCartao, nome, nomeResponsavel, tipoCa
         tipo_cartao: tipoCartao,
         limite: limite,
         vencimento_fatura: vencimentoFatura,
-        id_usuario: usuarioId 
+        id_usuario: usuarioId,
+        saldo: saldo,              
+        tipo_recarga: tipoRecarga, 
+        dia_recarga: diaRecarga    
     };
 
     try {

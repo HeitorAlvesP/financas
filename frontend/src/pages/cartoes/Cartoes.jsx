@@ -56,8 +56,11 @@ function Cartoes() {
     const [limite, setLimite] = useState('');
     const [vencimentoFatura, setVencimentoFatura] = useState('');
     const [idCartaoEditando, setIdCartaoEditando] = useState(null);
+    const [saldo, setSaldo] = useState('');
+    const [tipoRecarga, setTipoRecarga] = useState('FIXO'); // Padrão é Dia Fixo
+    const [diaRecarga, setDiaRecarga] = useState('');
 
-    // --- NOVO: ESTADO PARA OS CARTÕES DO BANCO DE DADOS ---
+    // --- ESTADO PARA OS CARTÕES DO BANCO DE DADOS ---
     const [meusCartoes, setMeusCartoes] = useState([]);
 
     const carregarCartoes = async () => {
@@ -90,9 +93,9 @@ function Cartoes() {
         let sucesso = false;
 
         if (idCartaoEditando) {
-            sucesso = await handleEditarCartao(idCartaoEditando, nome, nomeResponsavel, tipoCartao, limite, vencimentoFatura);
+            sucesso = await handleEditarCartao(idCartaoEditando, nome, nomeResponsavel, tipoCartao, limite, vencimentoFatura, saldo, tipoRecarga, diaRecarga);
         } else {
-            sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura);
+            sucesso = await handleSalvarCartao(nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura, saldo, tipoRecarga, diaRecarga);
         }
 
         if (sucesso) {
@@ -102,6 +105,9 @@ function Cartoes() {
             setTipoCartao('C');
             setLimite('');
             setVencimentoFatura('');
+            setSaldo('');            
+            setTipoRecarga('FIXO');  
+            setDiaRecarga('');       
             setIdCartaoEditando(null);
             
             carregarCartoes(); 
@@ -116,6 +122,9 @@ function Cartoes() {
         setTipoCartao(cartao.tipo_cartao);
         setLimite(cartao.limite ? formatarMoeda(cartao.limite.toString()) : ''); 
         setVencimentoFatura(cartao.vencimento_fatura || ''); 
+        setSaldo(cartao.saldo ? formatarMoeda(cartao.saldo.toString()) : '');
+        setTipoRecarga(cartao.tipo_recarga || 'FIXO');
+        setDiaRecarga(cartao.dia_recarga || '');
         
         setIdCartaoEditando(cartao.id_cartao); 
         setTelaAtual('cadastro'); 
@@ -213,7 +222,7 @@ function Cartoes() {
                             /* --- NOVO: Usando o 'cartao' de dentro do array 'cartoesAtuais' --- */
                             cartoesAtuais.map((cartao, index) => (
                                 <motion.div
-                                    key={cartao.id_cartao} // O ID do banco como chave única
+                                    key={cartao.id_cartao} 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.40, delay: 0.1 + (index * 0.1) }}
@@ -355,7 +364,7 @@ function Cartoes() {
             ) : (
                 // --- TELA DE CADASTRO (Novo layout) ---
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }} // Vem deslizando da esquerda
+                    initial={{ opacity: 0, x: -20 }} 
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4 }}
                     style={formularioContainerStyle}
@@ -370,7 +379,6 @@ function Cartoes() {
                             <label style={labelStyle}>Nome do Cartão (Ex: Nubank)</label>
                             <input
                                 type="text"
-                                // style={inputFormStyle}
                                 style={{
                                     ...inputFormStyle, 
                                     opacity: idCartaoEditando ? 0.5 : 1,
@@ -440,49 +448,153 @@ function Cartoes() {
                         </div>
 
                         {/* Linha 3 */}
-                        <div style={grupoInputStyle}>
-                            <label style={labelStyle}>Limite (R$)</label>
-                            <input
-                                type="text"
-                                style={inputFormStyle}
-                                placeholder="Ex: R$ 0.000,00"
-                                value={limite}
-                                onChange={(e) => setLimite(formatarMoeda(e.target.value))}
-                                onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
-                                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-                            />
-                        </div>
+                        {(tipoCartao === 'C' || tipoCartao === 'D') && (
+                            <div style={grupoInputStyle}>
+                                <label style={labelStyle}>Limite (R$)</label>
+                                <input
+                                    type="text"
+                                    style={inputFormStyle}
+                                    placeholder="Ex: R$ 0.000,00"
+                                    value={limite}
+                                    onChange={(e) => setLimite(formatarMoeda(e.target.value))}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                    onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                />
+                            </div>
+                        )}
 
+                        {/* SE FOR SÓ CRÉDITO ('C'), MOSTRA VENCIMENTO */}
                         {tipoCartao === 'C' && (
                             <div style={grupoInputStyle}>
                                 <label style={labelStyle}>Dia de Vencimento</label>
                                 <input
                                     type="number"
                                     min="1"
-                                    max="31"
+                                    max="28"
                                     style={inputFormStyle}
                                     placeholder="Ex: 10"
                                     value={vencimentoFatura}
                                     onChange={(e) => {
-                                        const valor = e.target.value;
-                                        if (valor === '') {
-                                            setVencimentoFatura('');
-                                            return;
-                                        }
-                                        const numero = Number(valor);
-
-                                        if (numero > 28) {
-                                            setVencimentoFatura('28');
-                                        } else if (numero < 1) {
-                                            setVencimentoFatura('1');
-                                        } else {
-                                            setVencimentoFatura(valor);
-                                        }
+                                        const val = e.target.value;
+                                        if (val === '') { setVencimentoFatura(''); return; }
+                                        const num = Number(val);
+                                        if (num > 28) setVencimentoFatura('28');
+                                        else if (num < 1) setVencimentoFatura('1');
+                                        else setVencimentoFatura(val);
                                     }} 
                                     onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
                                     onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                                 />
                             </div>
+                        )}
+
+                        {/* SE FOR VALE ALIMENTAÇÃO/REFEIÇÃO ('V'), MOSTRA CAMPOS ESPECÍFICOS */}
+                        {tipoCartao === 'V' && (
+                            <>
+                                <div style={grupoInputStyle}>
+                                    <label style={labelStyle}>Saldo Atual (R$)</label>
+                                    <input
+                                        type="text"
+                                        style={inputFormStyle}
+                                        placeholder="Ex: R$ 500,00"
+                                        value={saldo}
+                                        onChange={(e) => setSaldo(formatarMoeda(e.target.value))} // Usa a mesma máscara!
+                                        onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                    />
+                                </div>
+
+                                <div style={grupoInputStyle}>
+                                    <label style={labelStyle}>Tipo de Recarga</label>
+                                    <select
+                                        style={inputFormStyle}
+                                        value={tipoRecarga}
+                                        onChange={(e) => {
+                                            setTipoRecarga(e.target.value);
+                                            setDiaRecarga(''); 
+                                        }}
+                                        onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                    >
+                                        <option value="FIXO">Dia Fixo do Mês</option>
+                                        <option value="UTIL">Dia Útil do Mês</option>
+                                    </select>
+                                </div>
+
+                                <div style={grupoInputStyle}>
+                                    <label style={labelStyle}>
+                                        {tipoRecarga === 'FIXO' ? 'Dia da Recarga' : 'Qual Dia Útil?'}
+                                    </label>
+                                    
+                                    {/* NOVO: Container Flex para colocar o Input e o Checkbox lado a lado */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                        
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max={tipoRecarga === 'FIXO' ? "28" : "5"}
+                                            style={{
+                                                ...inputFormStyle,
+                                                flex: 1,
+                                                opacity: diaRecarga === '99' ? 0.5 : 1, 
+                                                cursor: diaRecarga === '99' ? 'not-allowed' : 'text'
+                                            }}
+                                            placeholder={tipoRecarga === 'FIXO' ? "Ex: 20" : "Ex: 2 (2º dia útil)"}
+                                            value={diaRecarga === '99' ? '' : diaRecarga}
+                                            disabled={diaRecarga === '99'} 
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                
+                                                if (val === '') { 
+                                                    setDiaRecarga(''); 
+                                                    return; 
+                                                }
+                                                
+                                                const num = Number(val);
+                                                const limiteMaximo = tipoRecarga === 'FIXO' ? 28 : 5;
+
+                                                if (num > limiteMaximo) {
+                                                    setDiaRecarga(limiteMaximo.toString());
+                                                } else if (num < 1) {
+                                                    setDiaRecarga('1');
+                                                } else {
+                                                    setDiaRecarga(val);
+                                                }
+                                            }} 
+                                            onFocus={(e) => e.target.style.borderColor = 'var(--neon-green)'}
+                                            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                        />
+
+                                        {/* NOVO: Checkbox de Último Dia (Só aparece se o tipo for UTIL) */}
+                                        {tipoRecarga === 'UTIL' && (
+                                            <label style={{ 
+                                                ...labelStyle, 
+                                                marginBottom: 0, // Remove a margem padrão do label
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '8px', 
+                                                cursor: 'pointer',
+                                                whiteSpace: 'nowrap' // Impede o texto de quebrar linha
+                                            }}>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={diaRecarga === '99'}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setDiaRecarga('99'); // Aciona o número mágico!
+                                                        } else {
+                                                            setDiaRecarga(''); // Desmarca e limpa o valor
+                                                        }
+                                                    }}
+                                                    style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--neon-green)' }}
+                                                />
+                                                Último do Mês
+                                            </label>
+                                        )}
+
+                                    </div>
+                                </div>
+                            </>
                         )}
 
                         {/* Botão de Salvar */}

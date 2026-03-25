@@ -1,8 +1,14 @@
 import Swal from 'sweetalert2';
 
-export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura) => {
-    // 1. Validação básica no Frontend
-    if (!nome || !nomeResponsavel || !numeroCartao || !limite) {
+export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, tipoCartao, limite, vencimentoFatura, saldo, tipoRecarga, diaRecarga) => {
+
+    if (
+        !nome || 
+        !nomeResponsavel || 
+        !numeroCartao || 
+        (tipoCartao !== 'V' && !limite) || 
+        (tipoCartao === 'V' && !saldo)     
+    ) {
         Swal.fire({
             icon: 'warning',
             title: 'Atenção!',
@@ -30,15 +36,18 @@ export const handleSalvarCartao = async (nome, nomeResponsavel, numeroCartao, ti
         return false;
     }
 
-    // 3. Monta os dados para enviar
     const dadosCartao = {
         nome: nome,
         nome_responsavel: nomeResponsavel,
         numero_cartao: numeroCartao,
         tipo_cartao: tipoCartao,
         limite: limite,
+        vencimento_fatura: vencimentoFatura,
         id_usuario: usuarioId,
-        vencimento_fatura: vencimentoFatura 
+        saldo: saldo,               
+        tipo_recarga: tipoRecarga,  
+        dia_recarga: diaRecarga
+
     };
 
     try {

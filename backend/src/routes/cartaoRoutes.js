@@ -11,7 +11,7 @@ const router = express.Router();
 
 export default function (db) {
     // Rota: POST http://localhost:3000/api/cartoes/
-    router.post('/',                                  verificarToken, (req, res) => cadastrarCartao(db, req, res));
+    router.post('/',                           verificarToken, (req, res) => cadastrarCartao(db, req, res));
 
     // Rotas abaixo
     router.get('/usuario/:idUsuario',          verificarToken, (req, res) => buscarCartoesPorUsuario(db, req, res));
