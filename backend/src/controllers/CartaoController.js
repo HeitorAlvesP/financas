@@ -4,7 +4,11 @@
 
 /* #CREATE       */
 export const cadastrarCartao = async (db, req, res) => {
-    const { nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario, vencimento_fatura } = req.body;
+    const { 
+        nome, nome_responsavel, numero_cartao, tipo_cartao, 
+        limite, id_usuario, vencimento_fatura,
+        saldo, tipo_recarga, dia_recarga 
+    } = req.body;
 
     console.log("DADOS QUE CHEGARAM NO NODE:", req.body);
 
@@ -22,11 +26,30 @@ export const cadastrarCartao = async (db, req, res) => {
         limiteTratado = limite.replace('R$', '').replace(/\s/g, '').replace(/\./g, '');
     }
 
+    let saldoTratado = null;
+    if (saldo) {
+        saldoTratado = saldo.replace('R$', '').replace(/\s/g, '').replace(/\./g, '');
+    }
+
     try {
         const result = await db.run(
-            `INSERT INTO tb_cartao (nome, nome_responsavel, numero_cartao, tipo_cartao, limite, id_usuario, vencimento_fatura) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [nome, nome_responsavel, numero_cartao, tipo_cartao, limiteTratado, id_usuario, vencimento_fatura || null]
+            `INSERT INTO tb_cartao (
+                nome, nome_responsavel, numero_cartao, tipo_cartao, 
+                limite, id_usuario, vencimento_fatura,
+                saldo, tipo_recarga, dia_recarga
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nome, 
+                nome_responsavel, 
+                numero_cartao, 
+                tipo_cartao, 
+                limiteTratado, 
+                id_usuario, 
+                vencimento_fatura || null,
+                saldoTratado,         
+                tipo_recarga || null, 
+                dia_recarga || null   
+            ]
         );
 
         return res.status(201).json({
@@ -46,8 +69,10 @@ export const buscarCartoesPorUsuario = async (db, req, res) => {
     const { idUsuario } = req.params;
 
     try {
+        // --- ATUALIZADO: Adicionamos saldo, tipo_recarga e dia_recarga no SELECT ---
         const cartoes = await db.all(
-            `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, limite, vencimento_fatura
+            `SELECT id_cartao, nome, nome_responsavel, numero_cartao, tipo_cartao, 
+                    limite, vencimento_fatura, saldo, tipo_recarga, dia_recarga
              FROM tb_cartao 
              WHERE id_usuario = ? AND status = 1
              ORDER BY id_cartao`,
@@ -61,7 +86,7 @@ export const buscarCartoesPorUsuario = async (db, req, res) => {
         return res.status(500).json({ erro: "Erro interno ao processar a listagem de cartões." });
     }
 };
-
+/* ###         */
 
 
 /* #UPDATE - INATIVAR CARTÃO (Soft Delete) */
@@ -98,9 +123,12 @@ export const inativarCartao = async (db, req, res) => {
 
 /* #UPDATE - EDITAR DADOS DO CARTÃO */
 export const atualizarCartao = async (db, req, res) => {
-    const { idCartao } = req.params;
+    const { idCartao } = req.params; 
     
-    const { nome, nome_responsavel, tipo_cartao, limite, vencimento_fatura, id_usuario } = req.body;
+    const { 
+        nome, nome_responsavel, tipo_cartao, limite, vencimento_fatura, id_usuario,
+        saldo, tipo_recarga, dia_recarga 
+    } = req.body;
 
     if (!idCartao || !id_usuario) {
         return res.status(400).json({ erro: "ID do cartão e do usuário são obrigatórios para atualizar." });
@@ -111,6 +139,11 @@ export const atualizarCartao = async (db, req, res) => {
         limiteTratado = limite.replace('R$', '').replace(/\s/g, '').replace(/\./g, '');
     }
 
+    let saldoTratado = null;
+    if (saldo) {
+        saldoTratado = saldo.replace('R$', '').replace(/\s/g, '').replace(/\./g, '');
+    }
+
     try {
         const result = await db.run(
             `UPDATE tb_cartao 
@@ -118,9 +151,23 @@ export const atualizarCartao = async (db, req, res) => {
                  nome_responsavel = ?, 
                  tipo_cartao = ?, 
                  limite = ?, 
-                 vencimento_fatura = ?
+                 vencimento_fatura = ?,
+                 saldo = ?,
+                 tipo_recarga = ?,
+                 dia_recarga = ?
              WHERE id_cartao = ? AND id_usuario = ?`,
-            [nome, nome_responsavel, tipo_cartao, limiteTratado, vencimento_fatura || null, idCartao, id_usuario]
+            [
+                nome, 
+                nome_responsavel, 
+                tipo_cartao, 
+                limiteTratado, 
+                vencimento_fatura || null, 
+                saldoTratado, 
+                tipo_recarga || null, 
+                dia_recarga || null,
+                idCartao, 
+                id_usuario
+            ]
         );
 
         if (result.changes === 0) {

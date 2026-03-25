@@ -20,6 +20,3 @@ export const verificarToken = (req, res, next) => {
         return res.status(401).json({ erro: "Acesso negado. Token inválido ou expirado." });
     }
 };
-
-
-

@@ -1,10 +1,9 @@
 export const buscarCartoesAPI = async () => {
     const token = localStorage.getItem('token');
     const usuarioId = localStorage.getItem('usuarioId');
-
-    // Se não tiver token, nem tenta buscar e já devolve array vazio
+    
     if (!token || !usuarioId) {
-        window.location.href = '/'; // Altere para '/login' se a sua rota de login for essa
+        window.location.href = '/'; 
         return [];
     }
 
