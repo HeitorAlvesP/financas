@@ -44,15 +44,17 @@ function Documentacao() {
             id: 3,
             titulo: 'Estrutura do Frontend',
             desc: 'Organização do projeto React, árvore de componentes, gerenciamento de estados e estilização.',
-            formato: 'PDF',
-            icone: '💻' // Computador/Tela: representando a interface do usuário
+            formato: 'MD',
+            icone: '💻', 
+            arquivo: '/docs/03-estrutura-frontend.md'
         },
         {
             id: 4,
             titulo: 'Estrutura de Banco de Dados',
             desc: 'Modelagem do SQLite, diagrama das tabelas (tb_cartao, tb_usuario) e relacionamentos.',
-            formato: 'PDF',
-            icone: '🗄️'
+            formato: 'MD',
+            icone: '🗄️',
+            arquivo: '/docs/04-estrutura-banco-dados.md'
         },
         {
             id: 5,
