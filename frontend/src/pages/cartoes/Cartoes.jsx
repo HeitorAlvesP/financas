@@ -324,11 +324,11 @@ function Cartoes() {
                                             onMouseEnter={(e) => {
                                                 const btn = e.currentTarget;
                                                 const svg = btn.querySelector('svg');
-                                                btn.style.backgroundColor = '#ff003c'; // Fundo Vermelho
-                                                btn.style.boxShadow = '0 0 20px rgba(255, 0, 60, 0.6)'; // Sombra Vermelha
+                                                btn.style.backgroundColor = '#ff003c'; 
+                                                btn.style.boxShadow = '0 0 20px rgba(255, 0, 60, 0.6)'; 
                                                 btn.style.transform = 'scale(1.1)';
                                                 if (svg) {
-                                                    svg.style.stroke = '#ffffff'; // Ícone Branco para dar contraste
+                                                    svg.style.stroke = '#ffffff'; 
                                                     svg.style.filter = 'none';
                                                 }
                                             }}
@@ -339,7 +339,7 @@ function Cartoes() {
                                                 btn.style.boxShadow = 'none';
                                                 btn.style.transform = 'scale(1)';
                                                 if (svg) {
-                                                    svg.style.stroke = '#ff003c'; // Volta para o vermelho
+                                                    svg.style.stroke = '#ff003c';
                                                     svg.style.filter = 'drop-shadow(0 0 5px rgba(255, 0, 60, 0.5))';
                                                 }
                                             }}

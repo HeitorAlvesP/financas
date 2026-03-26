@@ -12,8 +12,7 @@ function MenuLateral() {
     const itensMenu = [
         { nome: 'Resumo', rota: '/dashboard' },
         { nome: 'Cartões', rota: '/cartoes' },
-        { nome: 'Categorias', rota: '/categorias' },
-        { nome: 'Configurações', rota: '/configuracoes' }
+        { nome: 'Documentação', rota: '/documentacao' } 
     ];
 
     return (

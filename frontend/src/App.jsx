@@ -15,6 +15,7 @@ import ValidacaoPendente from './pages/auth/ValidacaoPendente';
 import Dashboard from './pages/dashboard/Dashboard';
 import MinhaConta from './pages/perfil/MinhaConta';
 import Cartoes from './pages/cartoes/Cartoes';
+import Documentacao from './pages/doc/Documentacao';
 
 function App() {
   return (
@@ -35,11 +36,11 @@ function App() {
         <Route element={<ProtectedRoute />}> 
           <Route element={<LayoutPrivado />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/transacoes" element={<Dashboard />} />
-            <Route path="/categorias" element={<Dashboard />} />
-            <Route path="/configuracoes" element={<Dashboard />} />
             <Route path="/perfil" element={<MinhaConta />} />
             <Route path="/cartoes" element={<Cartoes />} />
+            
+            {/* --- NOVA ROTA DE DOCUMENTAÇÃO --- */}
+            <Route path="/documentacao" element={<Documentacao />} />
           </Route>
         </Route>
 
