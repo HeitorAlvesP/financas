@@ -1,163 +1,100 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
-// --- ESTILOS REAPROVEITADOS (Você pode mover para um styleDocumentacao.js depois) ---
-const paginaPrincipalStyle = {
-    padding: '40px',
-    marginLeft: '200px', // Respeitando o menu lateral
-    minHeight: '100vh',
-    backgroundColor: 'var(--bg-fundo)',
-    color: '#fff',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-};
-
-const headerStyle = {
-    marginBottom: '40px'
-};
-
-const tituloNeonStyle = {
-    fontSize: '2.5rem',
-    color: 'var(--neon-green)',
-    textShadow: '0 0 10px var(--neon-glow)',
-    margin: '0 0 10px 0',
-    letterSpacing: '2px'
-};
-
-const linhaDecorativaStyle = {
-    height: '3px',
-    width: '100px',
-    backgroundColor: 'var(--neon-green)',
-    boxShadow: '0 0 10px var(--neon-glow)',
-    borderRadius: '2px'
-};
-
-const listaContainerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    marginTop: '20px'
-};
-
-const itemDocStyle = {
-    backgroundColor: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '12px',
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    transition: 'all 0.3s ease'
-};
-
-const infoDocStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px'
-};
-
-const iconeFakeStyle = {
-    width: '50px',
-    height: '50px',
-    backgroundColor: 'rgba(0, 243, 255, 0.1)', // Fundo ciano bem fraco
-    borderRadius: '10px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '1.5rem',
-    border: '1px solid rgba(0, 243, 255, 0.3)'
-};
-
-const tituloDocStyle = {
-    margin: '0 0 5px 0',
-    fontSize: '1.2rem',
-    color: '#ffffff'
-};
-
-const descDocStyle = {
-    margin: 0,
-    fontSize: '0.9rem',
-    color: 'var(--text-gray)'
-};
-
-const badgeStyle = {
-    fontSize: '0.7rem',
-    backgroundColor: 'var(--bg-fundo)',
-    padding: '3px 8px',
-    borderRadius: '12px',
-    border: '1px solid var(--border-color)',
-    marginLeft: '10px',
-    verticalAlign: 'middle',
-    color: '#aaa'
-};
-
-const botaoAcaoCianoStyle = {
-    backgroundColor: 'transparent',
-    border: '1px solid #00f3ff',
-    color: '#00f3ff',
-    padding: '10px 20px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    transition: 'all 0.3s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-};
+import {
+    paginaPrincipalStyle,
+    badgeStyle,
+    botaoAcaoCianoStyle,
+    descDocStyle,
+    headerStyle,
+    iconeFakeStyle,
+    infoDocStyle,
+    itemDocStyle,
+    linhaDecorativaStyle,
+    listaContainerStyle,
+    tituloDocStyle,
+    tituloNeonStyle,
+    modalContentStyle,
+    modalOverlayStyle
+} from './style/style.js'
 
 // --- COMPONENTE PRINCIPAL ---
 function Documentacao() {
-    // Lista simulada de documentos
-   const [documentos] = useState([
-        { 
-            id: 1, 
-            titulo: 'Visão Geral do Sistema', 
-            desc: 'Documentação do escopo do HALPI, funcionamento dos módulos atuais e o roadmap (próximos passos).', 
-            formato: 'PDF', 
-            icone: '🗺️' 
+    const [documentos] = useState([
+        {
+            id: 1,
+            titulo: 'Visão Geral do Sistema',
+            desc: 'Documentação do escopo do HALPI, funcionamento dos módulos atuais e o roadmap (próximos passos).',
+            formato: 'MD',
+            icone: '🗺️',
+            arquivo: '/docs/01-visao-geral.md'
         },
-        { 
-            id: 2, 
-            titulo: 'Estrutura do Backend', 
-            desc: 'Arquitetura do servidor Node.js, organização de rotas, controllers, middlewares e lógicas de negócio da API.', 
-            formato: 'PDF', 
+        {
+            id: 2,
+            titulo: 'Estrutura do Backend',
+            desc: 'Arquitetura do servidor Node.js, organização de rotas, controllers, middlewares e lógicas de negócio da API.',
+            formato: 'PDF',
             icone: '🔌' // Plugue: representando conexões e API
         },
-        { 
-            id: 3, 
-            titulo: 'Estrutura do Frontend', 
-            desc: 'Organização do projeto React, árvore de componentes, gerenciamento de estados e estilização.', 
-            formato: 'PDF', 
+        {
+            id: 3,
+            titulo: 'Estrutura do Frontend',
+            desc: 'Organização do projeto React, árvore de componentes, gerenciamento de estados e estilização.',
+            formato: 'PDF',
             icone: '💻' // Computador/Tela: representando a interface do usuário
         },
-        { 
-            id: 4, 
-            titulo: 'Estrutura de Banco de Dados', 
-            desc: 'Modelagem do SQLite, diagrama das tabelas (tb_cartao, tb_usuario) e relacionamentos.', 
-            formato: 'PDF', 
+        {
+            id: 4,
+            titulo: 'Estrutura de Banco de Dados',
+            desc: 'Modelagem do SQLite, diagrama das tabelas (tb_cartao, tb_usuario) e relacionamentos.',
+            formato: 'PDF',
             icone: '🗄️'
         },
-        { 
-            id: 5, 
-            titulo: 'Serviços (Services)', 
-            desc: 'Guias de integração e funcionamento de serviços em background: Autenticação JWT, NodeMailer, etc.', 
-            formato: 'MD', 
-            icone: '⚙️' 
+        {
+            id: 5,
+            titulo: 'Serviços (Services)',
+            desc: 'Guias de integração e funcionamento de serviços em background: Autenticação JWT, NodeMailer, etc.',
+            formato: 'MD',
+            icone: '⚙️'
         }
     ]);
 
-    const handleAbrirDoc = (doc) => {
-        // Alerta temporário até você criar o visualizador real
-        Swal.fire({
-            icon: 'info',
-            title: `Abrindo: ${doc.titulo}`,
-            text: `No futuro, isso fará o download ou abrirá o arquivo ${doc.formato} na tela.`,
-            background: '#1e1e1e',
-            color: '#ffffff',
-            confirmButtonColor: '#00f3ff'
-        });
-    };
+    const [modalAberto, setModalAberto] = useState(false);
+    const [docSelecionado, setDocSelecionado] = useState(null);
+    const [conteudoMd, setConteudoMd] = useState('');
 
+    const handleAbrirDoc = async (doc) => {
+        if (doc.formato === 'MD' && doc.arquivo) {
+            try {
+                const resposta = await fetch(doc.arquivo);
+                const texto = await resposta.text();
+
+                setConteudoMd(texto);
+                setDocSelecionado(doc);
+                setModalAberto(true);
+            } catch (erro) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Leitura',
+                    text: 'Não foi possível carregar o ficheiro de documentação.',
+                    background: '#1e1e1e',
+                    color: '#ffffff'
+                });
+            }
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Em Construção',
+                text: 'Esta documentação ainda não foi redigida ou o formato não é suportado.',
+                background: '#1e1e1e',
+                color: '#ffffff',
+                confirmButtonColor: '#00f3ff'
+            });
+        }
+    };
     return (
         <div style={paginaPrincipalStyle}>
             {/* CABEÇALHO */}
@@ -200,7 +137,7 @@ function Documentacao() {
                             </div>
                             <div>
                                 <h3 style={tituloDocStyle}>
-                                    {doc.titulo} 
+                                    {doc.titulo}
                                     <span style={badgeStyle}>{doc.formato}</span>
                                 </h3>
                                 <p style={descDocStyle}>{doc.desc}</p>
@@ -232,6 +169,45 @@ function Documentacao() {
                     </motion.div>
                 ))}
             </div>
+
+            <AnimatePresence>
+                {modalAberto && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={modalOverlayStyle}
+                        onClick={() => setModalAberto(false)} 
+                    >
+                        <motion.div
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 50, opacity: 0 }}
+                            style={modalContentStyle}
+                            onClick={(e) => e.stopPropagation()} 
+                        >
+                            {/* Cabeçalho do Modal */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px' }}>
+                                <h2 style={{ margin: 0, color: 'var(--neon-green)' }}>{docSelecionado?.titulo}</h2>
+                                <button
+                                    onClick={() => setModalAberto(false)}
+                                    style={{ background: 'none', border: 'none', color: 'red', fontSize: '1.5rem', cursor: 'pointer' }}
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            {/* Conteúdo Renderizado (Onde a mágica acontece) */}
+                            <div className="markdown-body" style={{ color: '#ddd', lineHeight: '1.6' }}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {conteudoMd}
+                                </ReactMarkdown>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     );
 }
