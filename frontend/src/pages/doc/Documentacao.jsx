@@ -27,7 +27,7 @@ function Documentacao() {
         {
             id: 1,
             titulo: 'Visão Geral do Sistema',
-            desc: 'Documentação do escopo do HALPI, funcionamento dos módulos atuais e o roadmap (próximos passos).',
+            desc: 'Documentação do escopo do FINANÇAS, funcionamento dos módulos atuais e o roadmap (próximos passos).',
             formato: 'MD',
             icone: '🗺️',
             arquivo: '/docs/01-visao-geral.md'
@@ -131,7 +131,7 @@ function Documentacao() {
                 <h1 style={tituloNeonStyle}>DOCUMENTAÇÃO</h1>
                 <div style={linhaDecorativaStyle}></div>
                 <p style={{ color: 'var(--text-gray)', marginTop: '15px' }}>
-                    Área técnica destinada a desenvolvedores. Estrutura, APIs e guias do sistema HALPI.
+                    Área técnica destinada a desenvolvedores. Estrutura, APIs e guias do sistema finanças.
                 </p>
             </motion.header>
 

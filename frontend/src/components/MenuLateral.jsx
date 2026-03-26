@@ -17,7 +17,7 @@ function MenuLateral() {
 
     return (
         <div style={sidebarStyle}>
-            <h2 style={logoStyle}>HALPI</h2>
+            <h2 style={logoStyle}>FINANÇAS</h2>
 
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {itensMenu.map((item) => (

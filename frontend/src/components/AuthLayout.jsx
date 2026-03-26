@@ -8,7 +8,7 @@ function AuthLayout() {
             {/* LADO ESQUERDO: Texto e Ilustração */}
             <div style={leftSideStyle}>
                 <div style={textOverlayStyle}>
-                    <h1 style={titleStyle}>HALPI FINANÇAS</h1>
+                    <h1 style={titleStyle}>FINANÇAS</h1>
                     <p style={subtitleStyle}>Controle seu futuro, um clique por vez.</p>
                 </div>
 

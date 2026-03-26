@@ -1,7 +1,7 @@
-# 🔌 Estrutura do Backend: HALPI API
+# 🔌 Estrutura do Backend: FINANÇAS
 
 ## 1. Visão Geral da Arquitetura
-O backend do HALPI é construído em **Node.js** utilizando o framework **Express**. A arquitetura segue o padrão de separação de responsabilidades (Rotas > Controladores > Serviços > Banco de Dados), garantindo que o código seja modular, testável e de fácil manutenção.
+O backend de finanças é construído em **Node.js** utilizando o framework **Express**. A arquitetura segue o padrão de separação de responsabilidades (Rotas > Controladores > Serviços > Banco de Dados), garantindo que o código seja modular, testável e de fácil manutenção.
 
 O banco de dados escolhido é o **SQLite**, manipulado através de queries otimizadas. Toda a comunicação com o frontend é feita via API RESTful retornando respostas em formato JSON.
 
