@@ -10,7 +10,7 @@ function MenuLateral() {
     };
 
     const itensMenu = [
-        { nome: 'Resumo', rota: '/dashboard' },
+        { nome: 'Dashboard', rota: '/dashboard' },
         { nome: 'Cartões', rota: '/cartoes' },
         { nome: 'Documentação', rota: '/documentacao' } 
     ];

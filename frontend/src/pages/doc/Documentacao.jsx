@@ -36,8 +36,9 @@ function Documentacao() {
             id: 2,
             titulo: 'Estrutura do Backend',
             desc: 'Arquitetura do servidor Node.js, organização de rotas, controllers, middlewares e lógicas de negócio da API.',
-            formato: 'PDF',
-            icone: '🔌' // Plugue: representando conexões e API
+            formato: 'MD',
+            icone: '🔌', 
+            arquivo:'/docs/02-estrutura-backend.md'
         },
         {
             id: 3,
@@ -108,7 +109,7 @@ function Documentacao() {
                         border-radius: 10px;
                     }
                     .modal-custom-scroll::-webkit-scrollbar-thumb {
-                        background: rgba(0, 243, 255, 0.4); 
+                        background: var(--neon-green); 
                         border-radius: 10px;
                     }
                     .modal-custom-scroll::-webkit-scrollbar-thumb:hover {
