@@ -97,6 +97,26 @@ function Documentacao() {
     };
     return (
         <div style={paginaPrincipalStyle}>
+
+            <style>
+                {`
+                    .modal-custom-scroll::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    .modal-custom-scroll::-webkit-scrollbar-track {
+                        background: var(--bg-card);
+                        border-radius: 10px;
+                    }
+                    .modal-custom-scroll::-webkit-scrollbar-thumb {
+                        background: rgba(0, 243, 255, 0.4); 
+                        border-radius: 10px;
+                    }
+                    .modal-custom-scroll::-webkit-scrollbar-thumb:hover {
+                        background: rgba(0, 243, 255, 0.8); 
+                    }
+                `}
+            </style>
+
             {/* CABEÇALHO */}
             <motion.header
                 initial={{ opacity: 0, y: 20 }}
@@ -177,14 +197,15 @@ function Documentacao() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         style={modalOverlayStyle}
-                        onClick={() => setModalAberto(false)} 
+                        onClick={() => setModalAberto(false)}
                     >
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 50, opacity: 0 }}
                             style={modalContentStyle}
-                            onClick={(e) => e.stopPropagation()} 
+                            className="modal-custom-scroll"
+                            onClick={(e) => e.stopPropagation()}
                         >
                             {/* Cabeçalho do Modal */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '20px' }}>
